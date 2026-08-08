@@ -7,33 +7,38 @@ export default {
   theme: {
     extend: {
       colors: {
-        tg: {
-          bg: 'var(--tg-theme-bg-color, #0f172a)',
-          text: 'var(--tg-theme-text-color, #f8fafc)',
-          hint: 'var(--tg-theme-hint-color, #94a3b8)',
-          link: 'var(--tg-theme-link-color, #38bdf8)',
-          button: 'var(--tg-theme-button-color, #3b82f6)',
-          buttonText: 'var(--tg-theme-button-text-color, #ffffff)',
-          secondaryBg: 'var(--tg-theme-secondary-bg-color, #1e293b)',
+        partizan: {
+          bg: '#121212',
+          card: '#1E1E20',
+          border: '#3A3A3D',
+          red: '#C8372D',
+          redHover: '#A52B23',
+          cream: '#F4F0EA',
+          muted: '#9E9B97',
+          mint: '#2A9D8F',
+          amber: '#E07A5F',
         },
-        vpn: {
-          active: '#10b981',
-          inactive: '#64748b',
-          accent: '#6366f1',
-          glow: 'rgba(99, 102, 241, 0.15)',
+        tg: {
+          bg: 'var(--tg-theme-bg-color, #121212)',
+          text: 'var(--tg-theme-text-color, #F4F0EA)',
+          hint: 'var(--tg-theme-hint-color, #9E9B97)',
+          link: 'var(--tg-theme-link-color, #C8372D)',
+          button: 'var(--tg-theme-button-color, #C8372D)',
+          buttonText: 'var(--tg-theme-button-text-color, #F4F0EA)',
+          secondaryBg: 'var(--tg-theme-secondary-bg-color, #1E1E20)',
         }
       },
       fontFamily: {
+        mono: ['"JetBrains Mono"', 'monospace'],
         sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
       },
       animation: {
-        'pulse-glow': 'pulse-glow 2.5s infinite ease-in-out',
-        'spin-slow': 'spin 12s linear infinite',
+        'pulse-red': 'pulse-red 2.5s infinite ease-in-out',
       },
       keyframes: {
-        'pulse-glow': {
-          '0%, 100%': { transform: 'scale(1)', opacity: '0.9', boxShadow: '0 0 25px rgba(16, 185, 129, 0.4)' },
-          '50%': { transform: 'scale(1.03)', opacity: '1', boxShadow: '0 0 45px rgba(16, 185, 129, 0.7)' },
+        'pulse-red': {
+          '0%, 100%': { transform: 'scale(1)', opacity: '0.9', boxShadow: '0 0 25px rgba(200, 55, 45, 0.4)' },
+          '50%': { transform: 'scale(1.03)', opacity: '1', boxShadow: '0 0 45px rgba(200, 55, 45, 0.7)' },
         }
       }
     },

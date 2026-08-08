@@ -3,13 +3,13 @@
 @tailwind utilities;
 
 :root {
-  --tg-theme-bg-color: #0d1117;
-  --tg-theme-text-color: #f0f6fc;
-  --tg-theme-hint-color: #8b949e;
-  --tg-theme-link-color: #58a6ff;
-  --tg-theme-button-color: #238636;
-  --tg-theme-button-text-color: #ffffff;
-  --tg-theme-secondary-bg-color: #161b22;
+  --tg-theme-bg-color: #121212;
+  --tg-theme-text-color: #F4F0EA;
+  --tg-theme-hint-color: #9E9B97;
+  --tg-theme-link-color: #C8372D;
+  --tg-theme-button-color: #C8372D;
+  --tg-theme-button-text-color: #F4F0EA;
+  --tg-theme-secondary-bg-color: #1E1E20;
   --safe-area-inset-top: env(safe-area-inset-top, 0px);
   --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
 }
@@ -20,45 +20,72 @@ body {
   padding-top: var(--safe-area-inset-top);
   padding-bottom: var(--safe-area-inset-bottom);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background-color: var(--tg-theme-bg-color);
-  color: var(--tg-theme-text-color);
+  background-color: #121212;
+  background-image: radial-gradient(circle at 50% 0%, rgba(200, 55, 45, 0.18), transparent 65%);
+  background-attachment: fixed;
+  color: #F4F0EA;
   overscroll-behavior-y: none;
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Glassmorphism styling */
-.glass-panel {
-  background: rgba(22, 27, 34, 0.75);
+/* Stencil Card */
+.pv-card {
+  background: #1E1E20;
+  border: 1px solid #3A3A3D;
+  border-radius: 20px;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.5);
+}
+
+.pv-card-glass {
+  background: rgba(30, 30, 32, 0.85);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid #3A3A3D;
+  border-radius: 24px;
 }
 
-.glass-card {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+/* Primary Partizan Red Button */
+.pv-button-primary {
+  background-color: #C8372D;
+  color: #F4F0EA;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 4px 20px rgba(200, 55, 45, 0.35);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Connection ring animations */
-@keyframes pulse-ring {
-  0% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
-  }
-  70% {
-    transform: scale(1.05);
-    box-shadow: 0 0 0 20px rgba(16, 185, 129, 0);
-  }
-  100% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
-  }
+.pv-button-primary:active {
+  transform: scale(0.98);
+  background-color: #A52B23;
 }
 
-.active-pulse {
-  animation: pulse-ring 2.5s infinite;
+/* Stencil Badge */
+.pv-badge-stencil {
+  background: #C8372D;
+  color: #F4F0EA;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.pv-badge-mint {
+  background: rgba(42, 157, 143, 0.2);
+  color: #2A9D8F;
+  border: 1px solid rgba(42, 157, 143, 0.4);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  text-transform: uppercase;
 }
 
 /* Custom scrollbars */
@@ -69,6 +96,6 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(244, 240, 234, 0.2);
   border-radius: 4px;
 }

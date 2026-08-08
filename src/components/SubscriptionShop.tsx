@@ -11,7 +11,7 @@ const PLANS: SubscriptionPlan[] = [
     priceRub: 149,
     priceStars: 100,
     priceUsdt: 1.6,
-    features: ['VLESS-XHTTP протокол', 'Безлимит по скорости (1 Гбит/с)', 'До 5 устройств одновременно', 'Доступ ко всем локациям'],
+    features: ['Протокол VLESS-XHTTP', 'Безлимитный VPN трафик', '20 ГБ для «Белых списков»', 'До 5 устройств одновременно'],
   },
   {
     id: 'plan-3m',
@@ -48,7 +48,7 @@ export const SubscriptionShop: React.FC = () => {
   const handleApplyPromo = (e: React.FormEvent) => {
     e.preventDefault();
     triggerHaptic.light();
-    if (promoCode.trim().toUpperCase() === 'VIBEVIP' || promoCode.trim().toUpperCase() === 'TELEGRAM') {
+    if (promoCode.trim().toUpperCase() === 'VIBEVIP' || promoCode.trim().toUpperCase() === 'TELEGRAM' || promoCode.trim().toUpperCase() === 'PARTIZAN') {
       setPromoApplied(true);
       setPromoError('');
       triggerHaptic.success();
@@ -61,8 +61,6 @@ export const SubscriptionShop: React.FC = () => {
   const handlePayStars = () => {
     triggerHaptic.medium();
     if (webApp?.openInvoice) {
-      // In production: server generates invoice URL via Bot API createInvoiceLink
-      // Demo invoice link format trigger
       webApp.openInvoice('https://t.me/$invoice_demo_hash', (status) => {
         if (status === 'paid') {
           triggerHaptic.success();
@@ -93,19 +91,19 @@ export const SubscriptionShop: React.FC = () => {
     <div className="space-y-5 pb-24 pt-2">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-2">
-          Тарифные планы <SparklesIcon />
+        <h1 className="text-2xl font-black font-mono text-[#F4F0EA] tracking-tight uppercase flex items-center gap-2">
+          КАССА И ТАРИФЫ 🔥
         </h1>
-        <p className="text-xs text-slate-400 mt-1">Выберите подходящую подписку для вашей защиты</p>
+        <p className="text-xs text-[#9E9B97] mt-1">Выберите подходящий период подписки PARTIZAN VPN</p>
       </div>
 
       {paymentSuccessMessage && (
-        <div className="bg-emerald-500/20 border border-emerald-500/40 rounded-2xl p-4 text-emerald-200 text-sm flex items-center justify-between">
+        <div className="bg-[#2A9D8F]/20 border border-[#2A9D8F]/40 rounded-2xl p-4 text-[#F4F0EA] text-sm flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <ShieldCheck className="w-5 h-5 text-emerald-400" />
+            <ShieldCheck className="w-5 h-5 text-[#2A9D8F]" />
             <span>{paymentSuccessMessage}</span>
           </div>
-          <button onClick={() => setPaymentSuccessMessage('')} className="text-xs text-emerald-400 underline">OK</button>
+          <button onClick={() => setPaymentSuccessMessage('')} className="text-xs text-[#2A9D8F] underline">OK</button>
         </div>
       )}
 
@@ -122,47 +120,47 @@ export const SubscriptionShop: React.FC = () => {
                 triggerHaptic.selection();
                 setSelectedPlan(plan);
               }}
-              className={`glass-panel rounded-3xl p-5 relative border transition-all cursor-pointer ${
+              className={`pv-card p-5 relative border transition-all cursor-pointer ${
                 isSelected
-                  ? 'border-indigo-500 bg-indigo-950/20 ring-1 ring-indigo-500/40 shadow-xl'
-                  : 'border-white/10 hover:border-white/20'
+                  ? 'border-[#C8372D] bg-[#C8372D]/10 ring-1 ring-[#C8372D]/40 shadow-xl'
+                  : 'border-[#3A3A3D] hover:border-[#F4F0EA]/30'
               }`}
             >
               {plan.popularBadge && (
-                <div className="absolute -top-3 right-6 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-extrabold text-[10px] uppercase tracking-wider px-3 py-0.5 rounded-full shadow-lg">
-                  Хит продаж 🔥
+                <div className="absolute -top-3 right-6 pv-badge-stencil shadow-lg">
+                  ХИТ ПРОДАЖ 🔥
                 </div>
               )}
 
               {plan.discountPercentage && !plan.popularBadge && (
-                <div className="absolute -top-3 right-6 bg-emerald-500 text-black font-extrabold text-[10px] uppercase tracking-wider px-2.5 py-0.5 rounded-full">
-                  Скидка {plan.discountPercentage}%
+                <div className="absolute -top-3 right-6 pv-badge-mint">
+                  СКИДКА {plan.discountPercentage}%
                 </div>
               )}
 
               <div className="flex items-start justify-between">
                 <div>
-                  <h3 className="text-lg font-bold text-white">{plan.name}</h3>
+                  <h3 className="text-lg font-bold font-mono text-[#F4F0EA] uppercase">{plan.name}</h3>
                   <div className="flex items-baseline gap-2 mt-1">
-                    <span className="text-2xl font-black text-white tracking-tight">{discountedPrice} ₽</span>
+                    <span className="text-2xl font-black font-mono text-[#F4F0EA] tracking-tight">{discountedPrice} ₽</span>
                     {promoApplied && (
-                      <span className="text-xs text-slate-400 line-through">{plan.priceRub} ₽</span>
+                      <span className="text-xs text-[#9E9B97] line-through">{plan.priceRub} ₽</span>
                     )}
-                    <span className="text-xs text-slate-400">/ {plan.durationMonths} мес</span>
+                    <span className="text-xs text-[#9E9B97]">/ {plan.durationMonths} мес</span>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1.5 bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs px-2.5 py-1 rounded-xl font-medium">
-                  <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                <div className="flex items-center gap-1.5 bg-[#E07A5F]/10 border border-[#E07A5F]/30 text-[#E07A5F] text-xs px-2.5 py-1 rounded-xl font-mono font-bold">
+                  <Star className="w-3.5 h-3.5 fill-[#E07A5F]" />
                   <span>{plan.priceStars}</span>
                 </div>
               </div>
 
               {/* Features list */}
-              <ul className="mt-4 pt-3 border-t border-white/5 space-y-1.5">
+              <ul className="mt-4 pt-3 border-t border-[#3A3A3D] space-y-1.5">
                 {plan.features.map((feat, idx) => (
-                  <li key={idx} className="text-xs text-slate-300 flex items-center gap-2">
-                    <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <li key={idx} className="text-xs text-[#F4F0EA] flex items-center gap-2">
+                    <Check className="w-3.5 h-3.5 text-[#2A9D8F] shrink-0" />
                     <span>{feat}</span>
                   </li>
                 ))}
@@ -173,23 +171,23 @@ export const SubscriptionShop: React.FC = () => {
       </div>
 
       {/* Promo Code Form */}
-      <form onSubmit={handleApplyPromo} className="glass-card rounded-2xl p-3.5 flex gap-2 items-center">
-        <Tag className="w-4 h-4 text-indigo-400 shrink-0 ml-1" />
+      <form onSubmit={handleApplyPromo} className="pv-card p-3.5 flex gap-2 items-center">
+        <Tag className="w-4 h-4 text-[#C8372D] shrink-0 ml-1" />
         <input
           type="text"
           value={promoCode}
           onChange={(e) => setPromoCode(e.target.value)}
-          placeholder="Промокод (например VIBEVIP)"
-          className="bg-transparent text-xs text-white placeholder-slate-500 focus:outline-none flex-1 font-medium"
+          placeholder="Промокод (например PARTIZAN)"
+          className="bg-transparent text-xs text-[#F4F0EA] placeholder-[#9E9B97] focus:outline-none flex-1 font-mono uppercase"
         />
         <button
           type="submit"
-          className="bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold px-3 py-1.5 rounded-xl border border-slate-700 transition-colors"
+          className="bg-[#121212] hover:bg-[#1E1E20] text-[#F4F0EA] font-mono text-xs font-bold px-3 py-1.5 rounded-xl border border-[#3A3A3D] transition-colors"
         >
-          {promoApplied ? 'Применён (-10%)' : 'Применить'}
+          {promoApplied ? 'ПРИМЕНЁН (-10%)' : 'ПРИМЕНИТЬ'}
         </button>
       </form>
-      {promoError && <p className="text-xs text-rose-400 px-1 font-medium">{promoError}</p>}
+      {promoError && <p className="text-xs text-[#C8372D] px-1 font-bold font-mono">{promoError}</p>}
 
       {/* Pay CTA Button */}
       <button
@@ -197,21 +195,21 @@ export const SubscriptionShop: React.FC = () => {
           triggerHaptic.medium();
           setShowPaymentModal(true);
         }}
-        className="w-full bg-gradient-to-r from-indigo-600 to-emerald-600 hover:from-indigo-500 hover:to-emerald-500 text-white font-bold text-sm py-4 rounded-2xl shadow-xl shadow-indigo-600/30 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+        className="w-full pv-button-primary py-4 text-sm flex items-center justify-center gap-2 active:scale-[0.98]"
       >
-        <Zap className="w-4 h-4 fill-white" />
-        Оплатить подписку «{selectedPlan.name}»
+        <Zap className="w-4 h-4 fill-current" />
+        ОПЛАТИТЬ ПОДПИСКУ «{selectedPlan.name.toUpperCase()}»
       </button>
 
       {/* Payment Selector Modal */}
       {showPaymentModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="bg-slate-900 border border-slate-800 w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="text-lg font-bold text-white">Способ оплаты</h3>
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="bg-[#1E1E20] border border-[#3A3A3D] w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[#3A3A3D] pb-3">
+              <h3 className="text-base font-bold font-mono text-[#F4F0EA] uppercase">Способ оплаты</h3>
               <button
                 onClick={() => setShowPaymentModal(false)}
-                className="text-slate-400 hover:text-white text-xs bg-slate-800 px-2.5 py-1 rounded-full"
+                className="text-[#9E9B97] hover:text-[#F4F0EA] text-xs bg-[#121212] px-2.5 py-1 rounded-full border border-[#3A3A3D]"
               >
                 Отмена
               </button>
@@ -221,52 +219,52 @@ export const SubscriptionShop: React.FC = () => {
               {/* Telegram Stars */}
               <button
                 onClick={handlePayStars}
-                className="w-full bg-slate-800/80 hover:bg-slate-800 border border-amber-500/30 p-3.5 rounded-2xl flex items-center justify-between transition-all group"
+                className="w-full bg-[#121212] hover:bg-[#1E1E20] border border-[#E07A5F]/40 p-3.5 rounded-2xl flex items-center justify-between transition-all group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/30">
-                    <Star className="w-5 h-5 fill-amber-400" />
+                  <div className="w-9 h-9 rounded-xl bg-[#E07A5F]/20 text-[#E07A5F] flex items-center justify-center border border-[#E07A5F]/30">
+                    <Star className="w-5 h-5 fill-[#E07A5F]" />
                   </div>
                   <div className="text-left">
-                    <div className="text-sm font-semibold text-white">Telegram Stars</div>
-                    <div className="text-xs text-slate-400">Мгновенная покупка внутри Telegram</div>
+                    <div className="text-sm font-bold font-mono text-[#F4F0EA]">Telegram Stars</div>
+                    <div className="text-xs text-[#9E9B97]">Покупка звёздами внутри Telegram</div>
                   </div>
                 </div>
-                <div className="text-sm font-bold text-amber-300">{selectedPlan.priceStars} Stars</div>
+                <div className="text-sm font-bold font-mono text-[#E07A5F]">{selectedPlan.priceStars} Stars</div>
               </button>
 
               {/* Crypto Pay */}
               <button
                 onClick={handlePayCrypto}
-                className="w-full bg-slate-800/80 hover:bg-slate-800 border border-slate-700 p-3.5 rounded-2xl flex items-center justify-between transition-all group"
+                className="w-full bg-[#121212] hover:bg-[#1E1E20] border border-[#3A3A3D] p-3.5 rounded-2xl flex items-center justify-between transition-all group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/30">
+                  <div className="w-9 h-9 rounded-xl bg-[#2A9D8F]/20 text-[#2A9D8F] flex items-center justify-center border border-[#2A9D8F]/30">
                     <Coins className="w-5 h-5" />
                   </div>
                   <div className="text-left">
-                    <div className="text-sm font-semibold text-white">Crypto Bot (USDT / TON)</div>
-                    <div className="text-xs text-slate-400">Оплата криптовалютой</div>
+                    <div className="text-sm font-bold font-mono text-[#F4F0EA]">Crypto Bot (USDT / TON)</div>
+                    <div className="text-xs text-[#9E9B97]">Оплата криптовалютой</div>
                   </div>
                 </div>
-                <div className="text-sm font-bold text-emerald-400">{selectedPlan.priceUsdt} USDT</div>
+                <div className="text-sm font-bold font-mono text-[#2A9D8F]">{selectedPlan.priceUsdt} USDT</div>
               </button>
 
               {/* Bank Cards / SBP */}
               <button
                 onClick={handlePayCard}
-                className="w-full bg-slate-800/80 hover:bg-slate-800 border border-slate-700 p-3.5 rounded-2xl flex items-center justify-between transition-all group"
+                className="w-full bg-[#121212] hover:bg-[#1E1E20] border border-[#3A3A3D] p-3.5 rounded-2xl flex items-center justify-between transition-all group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center border border-indigo-500/30">
+                  <div className="w-9 h-9 rounded-xl bg-[#C8372D]/20 text-[#C8372D] flex items-center justify-center border border-[#C8372D]/30">
                     <CreditCard className="w-5 h-5" />
                   </div>
                   <div className="text-left">
-                    <div className="text-sm font-semibold text-white">Банковская карта / СБП</div>
-                    <div className="text-xs text-slate-400">МИР, Visa, MasterCard</div>
+                    <div className="text-sm font-bold font-mono text-[#F4F0EA]">Банковская карта / СБП</div>
+                    <div className="text-xs text-[#9E9B97]">МИР, Visa, MasterCard</div>
                   </div>
                 </div>
-                <div className="text-sm font-bold text-white">
+                <div className="text-sm font-bold font-mono text-[#F4F0EA]">
                   {promoApplied ? Math.round(selectedPlan.priceRub * 0.9) : selectedPlan.priceRub} ₽
                 </div>
               </button>
@@ -277,7 +275,3 @@ export const SubscriptionShop: React.FC = () => {
     </div>
   );
 };
-
-const SparklesIcon = () => (
-  <span className="inline-block animate-pulse text-amber-400 text-lg">✨</span>
-);

@@ -10,12 +10,15 @@ import { UserSubscription } from './types/vpn';
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
 
-  // Mock subscription populated with production Marzban subscription URL from Axisforge DEPLOYMENT.md
+  // Mock subscription populated with production PARTIZAN VLESS-XHTTP specs
   const [subscription] = useState<UserSubscription>({
     status: 'active',
     expireDate: '2026-12-31',
     daysRemaining: 145,
     subscriptionUrl: 'https://axisforge.tech/274ba6b74d0c6820/9e8b7c6a5d4e3f2a1b0c',
+    isTrafficUnlimited: true, // Main VPN traffic is UNLIMITED!
+    whitelistUsedBytes: 4.2 * 1024 * 1024 * 1024, // 4.2 GB used of 20 GB Whitelist limit
+    whitelistTotalBytes: 20 * 1024 * 1024 * 1024,
     usedBytes: 34.8 * 1024 * 1024 * 1024,
     totalBytes: 100 * 1024 * 1024 * 1024,
     activeDevicesCount: 2,
@@ -29,7 +32,7 @@ export const App: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen bg-tg-bg text-tg-text relative">
+    <div className="min-h-screen bg-[#121212] text-[#F4F0EA] relative">
       <div className="max-w-md mx-auto min-h-screen px-4 py-2 flex flex-col justify-between">
         {/* Render Tab Pages */}
         <main className="flex-1">

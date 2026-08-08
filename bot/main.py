@@ -1,7 +1,7 @@
 import os
 import asyncio
 import logging
-from aiogram import Bot, Dispatcher, types, F
+from aiogram import Bot, Dispatcher, types
 from aiogram.filters import CommandStart, Command
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo, MenuButtonWebApp
 
@@ -24,13 +24,13 @@ async def command_start_handler(message: types.Message):
     user_name = message.from_user.first_name if message.from_user else "друг"
     
     welcome_text = (
-        f"👋 <b>Привет, {user_name}!</b>\n\n"
-        f"Добро пожаловать в <b>Axisforge VPN</b> — сверхскоростной и защищенный VPN сервис на протоколе <b>VLESS-XHTTP</b>.\n\n"
-        f"🚀 <b>Преимущества:</b>\n"
-        f"• Полный обход блокировок ТСПУ в РФ\n"
-        f"• Скорость до 1 Гбит/с без задержек\n"
-        f"• До 5 устройств на один аккаунт\n"
-        f"• Управление в 1 клик через Telegram Mini App\n\n"
+        f"🛡️ <b>Привет, {user_name}!</b>\n\n"
+        f"Добро пожаловать в <b>PARTIZAN VPN</b> — невидимый доступ к свободному интернету на протоколе <b>VLESS-XHTTP</b>.\n\n"
+        f"⚡ <b>Преимущества PARTIZAN:</b>\n"
+        f"• <b>Безлимитный VPN трафик</b> на максимальной скорости (1 Гбит/с)\n"
+        f"• Полная защита от блокировок ТСПУ в РФ\n"
+        f"• До 5 устройств одновременно на 1 подписку\n"
+        f"• Быстрая настройка в 1 клик через <b>Happ Client</b>\n\n"
         f"Нажмите кнопку ниже, чтобы открыть приложение:"
     )
 
@@ -38,13 +38,13 @@ async def command_start_handler(message: types.Message):
         inline_keyboard=[
             [
                 InlineKeyboardButton(
-                    text="🚀 Открыть Axisforge VPN",
+                    text="🚀 Открыть PARTIZAN VPN",
                     web_app=WebAppInfo(url=WEB_APP_URL)
                 )
             ],
             [
                 InlineKeyboardButton(
-                    text="💬 Служба поддержки",
+                    text="💬 Служба поддержки 24/7",
                     url="https://t.me/axisforge_support_bot"
                 )
             ]
@@ -60,10 +60,11 @@ async def command_help_handler(message: types.Message):
     Handles /help command.
     """
     help_text = (
-        "❓ <b>Нужна помощь с настройкой?</b>\n\n"
-        "1. Нажмите <b>«Открыть Axisforge VPN»</b> в меню бота.\n"
-        "2. Перейдите во вкладку <b>«Ключи»</b> и скопируйте вашу персональную ссылку.\n"
-        "3. Перейдите во вкладку <b>«Инструкция»</b> для поэтапной настройки ваших устройств."
+        "❓ <b>Помощь по настройке PARTIZAN VPN:</b>\n\n"
+        "1. Нажмите <b>«Открыть PARTIZAN VPN»</b> в меню бота.\n"
+        "2. Перейдите на главный экран или во вкладку <b>«КЛЮЧИ»</b>.\n"
+        "3. Нажмите кнопку <b>«Добавить подписку в Happ»</b>.\n"
+        "4. Все серверы автоматически добавятся в клиент Happ!"
     )
     await message.answer(help_text, parse_mode="HTML")
 
@@ -78,7 +79,7 @@ async def main():
     try:
         await bot.set_chat_menu_button(
             menu_button=MenuButtonWebApp(
-                text="VPN Клиент",
+                text="PARTIZAN VPN",
                 web_app=WebAppInfo(url=WEB_APP_URL)
             )
         )
@@ -86,7 +87,7 @@ async def main():
     except Exception as e:
         logger.error(f"Failed to set menu button: {e}")
 
-    logger.info("Starting Telegram Bot polling...")
+    logger.info("Starting PARTIZAN Telegram Bot polling...")
     try:
         await dp.start_polling(bot)
     except Exception as e:

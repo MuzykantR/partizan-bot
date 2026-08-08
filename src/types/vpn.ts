@@ -23,6 +23,9 @@ export interface UserSubscription {
   expireDate: string;
   daysRemaining: number;
   subscriptionUrl: string; // Marzban subscription URL for Happ
+  isTrafficUnlimited: boolean; // Main VPN traffic is UNLIMITED!
+  whitelistUsedBytes: number; // Whitelist mode traffic (20 GB limit)
+  whitelistTotalBytes: number;
   usedBytes: number;
   totalBytes: number;
   activeDevicesCount: number;
