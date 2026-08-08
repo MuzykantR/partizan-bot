@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, ShieldCheck, Headset, Smartphone, HardDrive, Award, Sparkles, ExternalLink } from 'lucide-react';
+import { ShieldCheck, Headset, Smartphone, Award, Sparkles, ExternalLink } from 'lucide-react';
 import { UserSubscription } from '../types/vpn';
 import { useTelegram } from '../hooks/useTelegram';
 

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useTelegram } from './hooks/useTelegram';
 import { TabType, Navigation } from './components/Navigation';
 import { Dashboard } from './components/Dashboard';
 import { SubscriptionShop } from './components/SubscriptionShop';
@@ -9,29 +8,24 @@ import { ProfileSettings } from './components/ProfileSettings';
 import { UserSubscription } from './types/vpn';
 
 export const App: React.FC = () => {
-  const { user } = useTelegram();
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
 
-  // Mock subscription populated with production VLESS-XHTTP link from Axisforge specs
+  // Mock subscription populated with production Marzban subscription URL from Axisforge DEPLOYMENT.md
   const [subscription] = useState<UserSubscription>({
     status: 'active',
     expireDate: '2026-12-31',
     daysRemaining: 145,
-    vlessLink: 'vless://2271b50cf51a5e3297f5fb406a5aa524@axisforge.tech:443?type=xhttp&path=%2F2271b50cf51a5e3297f5fb406a5aa524&security=tls&fp=firefox&alpn=h2#Axisforge-DE-Aeza',
+    subscriptionUrl: 'https://axisforge.tech/274ba6b74d0c6820/9e8b7c6a5d4e3f2a1b0c',
     usedBytes: 34.8 * 1024 * 1024 * 1024,
     totalBytes: 100 * 1024 * 1024 * 1024,
     activeDevicesCount: 2,
     maxDevicesCount: 5,
-    serverLocation: {
-      id: 'de-aeza',
-      country: 'Германия',
-      city: 'Франкфурт (Aeza)',
-      flag: '🇩🇪',
-      latencyMs: 34,
-      protocol: 'VLESS-XHTTP',
-      isRecommended: true,
-      loadPercentage: 24,
-    },
+    availableLocations: [
+      { id: 'de-aeza', country: 'Германия', city: 'Франкфурт (Aeza 9950X)', flag: '🇩🇪', protocol: 'VLESS-XHTTP' },
+      { id: 'nl-ams', country: 'Нидерланды', city: 'Амстердам', flag: '🇳🇱', protocol: 'VLESS-XHTTP' },
+      { id: 'fi-hel', country: 'Финляндия', city: 'Хельсинки', flag: '🇫🇮', protocol: 'VLESS-XHTTP' },
+      { id: 'us-nyc', country: 'США', city: 'Нью-Йорк', flag: '🇺🇸', protocol: 'VLESS-XHTTP' },
+    ],
   });
 
   return (
@@ -43,7 +37,6 @@ export const App: React.FC = () => {
             <Dashboard
               subscription={subscription}
               onNavigateToShop={() => setActiveTab('shop')}
-              onNavigateToKeys={() => setActiveTab('keys')}
             />
           )}
 
@@ -62,4 +55,5 @@ export const App: React.FC = () => {
     </div>
   );
 };
+
 export default App;

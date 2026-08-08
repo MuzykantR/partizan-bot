@@ -3,10 +3,7 @@ export interface ServerLocation {
   country: string;
   city: string;
   flag: string;
-  latencyMs: number;
-  protocol: 'VLESS-XHTTP' | 'VLESS-Reality' | 'AmneziaWG';
-  isRecommended?: boolean;
-  loadPercentage: number;
+  protocol: 'VLESS-XHTTP';
 }
 
 export interface SubscriptionPlan {
@@ -25,10 +22,10 @@ export interface UserSubscription {
   status: 'active' | 'expired' | 'trial';
   expireDate: string;
   daysRemaining: number;
-  vlessLink: string;
+  subscriptionUrl: string; // Marzban subscription URL for Happ
   usedBytes: number;
   totalBytes: number;
   activeDevicesCount: number;
   maxDevicesCount: number;
-  serverLocation: ServerLocation;
+  availableLocations: ServerLocation[];
 }
