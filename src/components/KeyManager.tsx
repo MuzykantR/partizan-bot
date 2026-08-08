@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { Copy, Check, QrCode, ExternalLink, ShieldCheck, Download, Smartphone } from 'lucide-react';
+import { Copy, Check, QrCode, Smartphone, Apple } from 'lucide-react';
 import { UserSubscription } from '../types/vpn';
 import { useTelegram } from '../hooks/useTelegram';
 
@@ -26,52 +26,47 @@ export const KeyManager: React.FC<KeyManagerProps> = ({ subscription }) => {
   };
 
   return (
-    <div className="space-y-5 pb-24 pt-2">
-      {/* Header */}
+    <div className="space-y-5 pb-24 pt-1">
+      {/* Header matching partizan_mvp_keys.jpg */}
       <div>
-        <h1 className="text-2xl font-black font-mono text-[#F4F0EA] tracking-tight uppercase flex items-center gap-2">
-          УПРАВЛЕНИЕ КЛЮЧОМ <ShieldCheck className="w-6 h-6 text-[#2A9D8F]" />
+        <h1 className="text-2xl font-extrabold text-[#F4F0EA] tracking-tight">
+          Управление подпиской
         </h1>
-        <p className="text-xs text-[#9E9B97] mt-1">Скопируйте ссылку подписки или отсканируйте QR-код в Happ</p>
       </div>
 
-      {/* Copy Subscription Card */}
-      <div className="pv-card p-5 space-y-4 shadow-xl">
-        <div className="flex items-center justify-between">
-          <div className="text-xs font-bold font-mono uppercase tracking-wider text-[#F4F0EA]">
-            Персональная ссылка подписки Happ
-          </div>
-          <span className="pv-badge-mint">
-            VLESS-XHTTP
-          </span>
+      {/* Copy Subscription Card matching partizan_mvp_keys.jpg */}
+      <div className="pv-card p-5 space-y-4">
+        <div className="text-xs font-bold text-[#F4F0EA] uppercase tracking-wider">
+          ПЕРСОНАЛЬНАЯ ССЫЛКА ПОДПИСКИ HAPP VLESS-XHTTP
         </div>
 
-        {/* Truncated Link Box */}
-        <div className="bg-[#121212] border border-[#3A3A3D] rounded-2xl p-3 font-mono text-xs text-[#F4F0EA] break-all flex items-center justify-between gap-2">
+        {/* Input Box with copy icon */}
+        <div className="bg-[#0E0E10] border border-[#2D2D30] rounded-2xl p-3 text-xs text-[#F4F0EA] font-mono flex items-center justify-between gap-2">
           <span className="truncate">{subscription.subscriptionUrl}</span>
+          <button onClick={handleCopySubscription} className="text-[#9E9B97] hover:text-[#F4F0EA] shrink-0">
+            {copied ? <Check className="w-4 h-4 text-[#C8372D]" /> : <Copy className="w-4 h-4" />}
+          </button>
         </div>
 
-        {/* Primary CTA: Open Happ */}
+        {/* Primary Red CTA Button */}
         <button
           onClick={handleOpenHapp}
-          className="w-full pv-button-primary py-3.5 text-xs flex items-center justify-center gap-2 active:scale-[0.98]"
+          className="w-full pv-button-primary py-3.5 text-sm font-bold flex items-center justify-center gap-2 active:scale-[0.98]"
         >
           <Smartphone className="w-4 h-4" />
-          ИМПОРТИРОВАТЬ ПОДПИСКУ В HAPP
+          Импортировать подписку в Happ
         </button>
 
-        {/* Secondary Action Buttons */}
-        <div className="grid grid-cols-2 gap-3 pt-1">
+        {/* Secondary Buttons Row */}
+        <div className="grid grid-cols-2 gap-2.5">
           <button
             onClick={handleCopySubscription}
-            className={`py-3 px-4 rounded-2xl font-mono font-bold text-xs transition-all flex items-center justify-center gap-2 active:scale-95 border ${
-              copied
-                ? 'bg-[#2A9D8F] text-[#F4F0EA] border-[#2A9D8F]'
-                : 'bg-[#121212] hover:bg-[#1E1E20] text-[#F4F0EA] border-[#3A3A3D]'
+            className={`pv-button-secondary py-3 px-3 text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-95 ${
+              copied ? 'border-[#C8372D] text-[#C8372D]' : ''
             }`}
           >
-            {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4 text-[#C8372D]" />}
-            {copied ? 'СКОПИРОВАНО!' : 'СКОПИРОВАТЬ ССЫЛКУ'}
+            {copied ? <Check className="w-4 h-4 text-[#C8372D]" /> : <Copy className="w-4 h-4 text-[#C8372D]" />}
+            {copied ? 'Скопировано' : 'Скопировать ссылку'}
           </button>
 
           <button
@@ -79,42 +74,43 @@ export const KeyManager: React.FC<KeyManagerProps> = ({ subscription }) => {
               triggerHaptic.light();
               setShowQrModal(true);
             }}
-            className="bg-[#121212] hover:bg-[#1E1E20] border border-[#3A3A3D] text-[#F4F0EA] font-mono font-bold py-3 px-4 rounded-2xl text-xs transition-all flex items-center justify-center gap-2 active:scale-95"
+            className="pv-button-secondary py-3 px-3 text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-95"
           >
             <QrCode className="w-4 h-4 text-[#E07A5F]" />
-            ПОКАЗАТЬ QR-КОД
+            Показать QR-код
           </button>
         </div>
       </div>
 
-      {/* Download Happ App Downloads */}
-      <div className="pv-card p-4 space-y-3">
-        <div className="flex items-center gap-2 text-xs font-bold font-mono text-[#F4F0EA] uppercase tracking-wider">
-          <Download className="w-4 h-4 text-[#C8372D]" />
-          Скачать клиент Happ
+      {/* Download Happ App Downloads Card matching partizan_mvp_keys.jpg */}
+      <div className="pv-card p-5 space-y-3">
+        <div className="text-xs font-bold text-[#F4F0EA] uppercase tracking-wider">
+          СКАЧАТЬ КЛИЕНТ HAPP
         </div>
 
         <div className="grid grid-cols-2 gap-2.5">
           <button
             onClick={() => openLink('https://apps.apple.com/app/happ-proxy-utility/id6504287905')}
-            className="bg-[#121212] hover:bg-[#1E1E20] border border-[#3A3A3D] rounded-xl p-3 text-left transition-all group"
+            className="pv-button-secondary p-3.5 text-left transition-all flex items-center gap-3"
           >
-            <div className="text-xs font-bold font-mono text-[#F4F0EA] flex items-center justify-between">
-              Happ for iOS
-              <ExternalLink className="w-3.5 h-3.5 text-[#9E9B97] group-hover:text-[#C8372D]" />
+            <Apple className="w-6 h-6 text-[#F4F0EA] shrink-0" />
+            <div>
+              <div className="text-xs text-[#9E9B97]">iOS</div>
+              <div className="text-sm font-bold text-[#F4F0EA]">App Store</div>
             </div>
-            <div className="text-[10px] text-[#9E9B97] mt-0.5">App Store</div>
           </button>
 
           <button
             onClick={() => openLink('https://play.google.com/store/apps/details?id=com.happ.proxy')}
-            className="bg-[#121212] hover:bg-[#1E1E20] border border-[#3A3A3D] rounded-xl p-3 text-left transition-all group"
+            className="pv-button-secondary p-3.5 text-left transition-all flex items-center gap-3"
           >
-            <div className="text-xs font-bold font-mono text-[#F4F0EA] flex items-center justify-between">
-              Happ for Android
-              <ExternalLink className="w-3.5 h-3.5 text-[#9E9B97] group-hover:text-[#C8372D]" />
+            <div className="w-6 h-6 rounded-lg bg-[#F4F0EA] text-[#121212] flex items-center justify-center font-bold text-xs shrink-0">
+              ▶
             </div>
-            <div className="text-[10px] text-[#9E9B97] mt-0.5">Google Play / APK</div>
+            <div>
+              <div className="text-xs text-[#9E9B97]">Android</div>
+              <div className="text-sm font-bold text-[#F4F0EA]">Play Store</div>
+            </div>
           </button>
         </div>
       </div>
@@ -122,15 +118,15 @@ export const KeyManager: React.FC<KeyManagerProps> = ({ subscription }) => {
       {/* QR Modal */}
       {showQrModal && (
         <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-[#1E1E20] border border-[#3A3A3D] w-full max-w-sm rounded-3xl p-6 text-center space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-[#3A3A3D] pb-3">
-              <h3 className="text-base font-bold font-mono text-[#F4F0EA] flex items-center gap-2 uppercase">
+          <div className="bg-[#1A1A1C] border border-[#2D2D30] w-full max-w-sm rounded-3xl p-6 text-center space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[#2D2D30] pb-3">
+              <h3 className="text-base font-bold text-[#F4F0EA] flex items-center gap-2">
                 <QrCode className="w-5 h-5 text-[#E07A5F]" />
                 QR-код подписки Happ
               </h3>
               <button
                 onClick={() => setShowQrModal(false)}
-                className="text-[#9E9B97] hover:text-[#F4F0EA] text-xs bg-[#121212] px-2.5 py-1 rounded-full border border-[#3A3A3D]"
+                className="text-[#9E9B97] hover:text-[#F4F0EA] text-xs bg-[#0E0E10] px-2.5 py-1 rounded-full border border-[#2D2D30]"
               >
                 Закрыть
               </button>
@@ -146,9 +142,9 @@ export const KeyManager: React.FC<KeyManagerProps> = ({ subscription }) => {
 
             <button
               onClick={handleCopySubscription}
-              className="w-full pv-button-primary py-3 text-xs"
+              className="w-full pv-button-primary py-3 text-xs font-bold"
             >
-              {copied ? 'СКОПИРОВАНО!' : 'СКОПИРОВАТЬ ССЫЛКУ ПОДПИСКИ'}
+              {copied ? 'Скопировано!' : 'Скопировать ссылку подписки'}
             </button>
           </div>
         </div>
