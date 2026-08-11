@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { ShieldCheck, MessageSquare, Share2, Check, Copy } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ShieldCheck, MessageSquare, Share2, Check, Copy, Users, Award } from 'lucide-react';
 import { UserSubscription } from '../types/vpn';
 import { useTelegram } from '../hooks/useTelegram';
+import { fetchUserProfile, UserProfileResponse } from '../services/api';
 
 interface ProfileSettingsProps {
   subscription: UserSubscription;
@@ -10,8 +11,20 @@ interface ProfileSettingsProps {
 export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ subscription }) => {
   const { user, triggerHaptic, openLink } = useTelegram();
   const [referralCopied, setReferralCopied] = useState<boolean>(false);
+  const [profileData, setProfileData] = useState<UserProfileResponse | null>(null);
 
-  const referralLink = `https://www.referral.com/${user?.id || '1379063170'}`;
+  const telegramId = user?.id || 999999999;
+  const referralLink = profileData?.referrals?.referral_url || `https://t.me/partizanVPNbot?start=ref_${telegramId}`;
+
+  useEffect(() => {
+    async function loadData() {
+      const res = await fetchUserProfile();
+      if (res) {
+        setProfileData(res);
+      }
+    }
+    loadData();
+  }, []);
 
   const handleCopyReferral = () => {
     triggerHaptic.success();
@@ -22,7 +35,7 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ subscription }
 
   const handleShareReferral = () => {
     triggerHaptic.light();
-    const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent('🔥 Присоединяйся к ПАРТИЗАН VPN! Получи +3 дня бесплатного VLESS-XHTTP доступа в обход всех блокировок!')}`;
+    const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent('🛡️ Присоединяйся к ПАРТИЗАН VPN! Получи бесплатный VLESS-XHTTP доступ в обход любых блокировок!')}`;
     openLink(shareUrl);
   };
 
@@ -31,9 +44,11 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ subscription }
     openLink('https://t.me/axisforge_support_bot');
   };
 
+  const isSubActive = subscription.hasSubscription && subscription.status !== 'inactive';
+
   return (
     <div className="space-y-5 pb-24 pt-1">
-      {/* Header matching partizan_mvp_profile.jpg */}
+      {/* Header */}
       <div className="flex items-center justify-center gap-2 pt-1">
         <img src="/logo.png" alt="ПАРТИЗАН" className="w-7 h-7 object-contain rounded-full border border-[#C8372D]/50" />
         <h1 className="text-xl font-extrabold font-mono text-[#F4F0EA] uppercase tracking-wider">
@@ -47,50 +62,56 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ subscription }
         </h2>
       </div>
 
-      {/* User Avatar Card matching partizan_mvp_profile.jpg */}
+      {/* User Avatar Card */}
       <div className="pv-card p-6 flex flex-col items-center justify-center text-center">
-        {/* Red rounded box avatar with stencil eyes */}
         <div className="w-24 h-24 rounded-3xl bg-[#C8372D] overflow-hidden p-1 shadow-xl border border-[#F4F0EA]/20 flex items-center justify-center">
           <img src="/logo.png" alt="Avatar" className="w-full h-full object-cover rounded-2xl" />
         </div>
 
         <div className="mt-3 space-y-1">
           <div className="text-xl font-bold text-[#F4F0EA]">
-            {user?.first_name || 'Пользователь'} {user?.last_name || ''}
+            {user?.first_name || 'Партизан'} {user?.last_name || ''}
           </div>
-          <div className="text-sm font-mono text-[#F4F0EA]">
-            ID: {user?.id || '1379063170'}
+          <div className="text-sm font-mono text-[#9E9B97]">
+            Telegram ID: <span className="text-[#F4F0EA] font-bold">{telegramId}</span>
           </div>
 
           <div className="mt-2 inline-flex items-center gap-1.5 bg-[#0E0E10] border border-[#2D2D30] px-3 py-1 rounded-full text-xs font-bold text-[#F4F0EA]">
-            <ShieldCheck className="w-3.5 h-3.5 text-[#C8372D]" />
-            <span>Подписка активирована</span>
+            <ShieldCheck className={`w-3.5 h-3.5 ${isSubActive ? 'text-[#C8372D]' : 'text-gray-500'}`} />
+            <span>{isSubActive ? 'Подписка активирована' : 'Подписка не создана'}</span>
           </div>
         </div>
       </div>
 
-      {/* Account Info Stats Grid 2x2 matching partizan_mvp_profile.jpg */}
+      {/* Account Info Stats Grid */}
       <div className="grid grid-cols-2 gap-3">
         <div className="pv-card p-4 text-center space-y-1">
-          <div className="text-xs text-[#9E9B97] font-medium">Устройства</div>
-          <div className="text-xl font-bold text-[#F4F0EA]">
-            {subscription.activeDevicesCount} из {subscription.maxDevicesCount}
+          <div className="text-xs text-[#9E9B97] font-medium">Рекруты отряда</div>
+          <div className="text-xl font-bold text-[#F4F0EA] flex items-center justify-center gap-1.5">
+            <Users className="w-4 h-4 text-[#C8372D]" />
+            <span>{profileData?.referrals?.recruits_count || 0}</span>
           </div>
         </div>
 
         <div className="pv-card p-4 text-center space-y-1">
-          <div className="text-xs text-[#9E9B97] font-medium">Статус</div>
-          <div className="text-xl font-bold text-[#F4F0EA]">PRO</div>
+          <div className="text-xs text-[#9E9B97] font-medium">Бонусные дни</div>
+          <div className="text-xl font-bold text-[#F4F0EA] flex items-center justify-center gap-1.5">
+            <Award className="w-4 h-4 text-[#E07A5F]" />
+            <span>+{profileData?.referrals?.earned_bonus_days || 0} дн</span>
+          </div>
         </div>
       </div>
 
-      {/* Referral Card matching partizan_mvp_profile.jpg */}
+      {/* Referral Card */}
       <div className="pv-card-glow p-5 space-y-3">
         <div className="text-base font-bold text-[#F4F0EA]">
-          Пригласить друга (+7 дней подписки)
+          «Партизанский Отряд» (+7 дней за друга)
         </div>
+        <p className="text-xs text-[#9E9B97] leading-relaxed">
+          Отправьте ссылку другу. При первой активации им подписки вы мгновенно получите +7 дней бесперебойного VPN!
+        </p>
 
-        <div className="text-xs text-[#9E9B97] font-mono truncate bg-[#0E0E10] border border-[#2D2D30] rounded-xl p-2.5">
+        <div className="text-xs text-[#F4F0EA] font-mono truncate bg-[#0E0E10] border border-[#2D2D30] rounded-xl p-2.5">
           {referralLink}
         </div>
 
@@ -113,7 +134,7 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ subscription }
         </div>
       </div>
 
-      {/* Support Card matching partizan_mvp_profile.jpg */}
+      {/* Support Card */}
       <button
         onClick={handleContactSupport}
         className="w-full pv-card p-4 flex items-center gap-3 transition-all hover:bg-[#251B1B]/40 active:scale-[0.99]"
@@ -122,7 +143,7 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ subscription }
           <MessageSquare className="w-5 h-5" />
         </div>
         <div className="text-base font-bold text-[#F4F0EA]">
-          Служба поддержки
+          Служба поддержки 24/7
         </div>
       </button>
     </div>

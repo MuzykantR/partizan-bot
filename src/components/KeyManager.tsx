@@ -1,19 +1,23 @@
 import React, { useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { Copy, Check, QrCode, Smartphone, Apple } from 'lucide-react';
+import { Copy, Check, QrCode, Smartphone, Apple, AlertTriangle } from 'lucide-react';
 import { UserSubscription } from '../types/vpn';
 import { useTelegram } from '../hooks/useTelegram';
 
 interface KeyManagerProps {
   subscription: UserSubscription;
+  onNavigateToDashboard?: () => void;
 }
 
-export const KeyManager: React.FC<KeyManagerProps> = ({ subscription }) => {
+export const KeyManager: React.FC<KeyManagerProps> = ({ subscription, onNavigateToDashboard }) => {
   const { triggerHaptic, openLink } = useTelegram();
   const [copied, setCopied] = useState<boolean>(false);
   const [showQrModal, setShowQrModal] = useState<boolean>(false);
 
+  const hasSub = subscription.hasSubscription && subscription.status !== 'inactive';
+
   const handleCopySubscription = () => {
+    if (!hasSub) return;
     triggerHaptic.success();
     navigator.clipboard.writeText(subscription.subscriptionUrl);
     setCopied(true);
@@ -21,68 +25,89 @@ export const KeyManager: React.FC<KeyManagerProps> = ({ subscription }) => {
   };
 
   const handleOpenHapp = () => {
+    if (!hasSub) return;
     triggerHaptic.medium();
     window.location.href = `happ://add/${encodeURIComponent(subscription.subscriptionUrl)}`;
   };
 
   return (
     <div className="space-y-5 pb-24 pt-1">
-      {/* Header matching partizan_mvp_keys.jpg */}
       <div>
         <h1 className="text-2xl font-extrabold text-[#F4F0EA] tracking-tight">
           Управление подпиской
         </h1>
       </div>
 
-      {/* Copy Subscription Card matching partizan_mvp_keys.jpg */}
-      <div className="pv-card p-5 space-y-4">
-        <div className="text-xs font-bold text-[#F4F0EA] uppercase tracking-wider">
-          ПЕРСОНАЛЬНАЯ ССЫЛКА ПОДПИСКИ HAPP VLESS-XHTTP
+      {!hasSub ? (
+        <div className="pv-card p-6 text-center space-y-4 border-l-4 border-[#C8372D]">
+          <div className="w-12 h-12 rounded-full bg-[#251B1B] border border-[#4A2927] text-[#C8372D] flex items-center justify-center mx-auto">
+            <AlertTriangle className="w-6 h-6" />
+          </div>
+          <div>
+            <h3 className="text-lg font-bold text-[#F4F0EA]">Подписка еще не создана</h3>
+            <p className="text-xs text-[#9E9B97] mt-1 leading-relaxed">
+              Активируйте 3 дня бесплатного доступа на Главном экране, чтобы получить персональную ссылку подписки VLESS-XHTTP.
+            </p>
+          </div>
+          {onNavigateToDashboard && (
+            <button
+              onClick={() => {
+                triggerHaptic.light();
+                onNavigateToDashboard();
+              }}
+              className="w-full pv-button-primary py-3 text-xs font-bold"
+            >
+              Перейти к активации триала
+            </button>
+          )}
         </div>
+      ) : (
+        <div className="pv-card p-5 space-y-4">
+          <div className="text-xs font-bold text-[#F4F0EA] uppercase tracking-wider">
+            ПЕРСОНАЛЬНАЯ ССЫЛКА ПОДПИСКИ HAPP VLESS-XHTTP
+          </div>
 
-        {/* Input Box with copy icon */}
-        <div className="bg-[#0E0E10] border border-[#2D2D30] rounded-2xl p-3 text-xs text-[#F4F0EA] font-mono flex items-center justify-between gap-2">
-          <span className="truncate">{subscription.subscriptionUrl}</span>
-          <button onClick={handleCopySubscription} className="text-[#9E9B97] hover:text-[#F4F0EA] shrink-0">
-            {copied ? <Check className="w-4 h-4 text-[#C8372D]" /> : <Copy className="w-4 h-4" />}
-          </button>
-        </div>
+          <div className="bg-[#0E0E10] border border-[#2D2D30] rounded-2xl p-3 text-xs text-[#F4F0EA] font-mono flex items-center justify-between gap-2">
+            <span className="truncate">{subscription.subscriptionUrl}</span>
+            <button onClick={handleCopySubscription} className="text-[#9E9B97] hover:text-[#F4F0EA] shrink-0">
+              {copied ? <Check className="w-4 h-4 text-[#C8372D]" /> : <Copy className="w-4 h-4" />}
+            </button>
+          </div>
 
-        {/* Primary Red CTA Button */}
-        <button
-          onClick={handleOpenHapp}
-          className="w-full pv-button-primary py-3.5 text-sm font-bold flex items-center justify-center gap-2 active:scale-[0.98]"
-        >
-          <Smartphone className="w-4 h-4" />
-          Импортировать подписку в Happ
-        </button>
-
-        {/* Secondary Buttons Row */}
-        <div className="grid grid-cols-2 gap-2.5">
           <button
-            onClick={handleCopySubscription}
-            className={`pv-button-secondary py-3 px-3 text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-95 ${
-              copied ? 'border-[#C8372D] text-[#C8372D]' : ''
-            }`}
+            onClick={handleOpenHapp}
+            className="w-full pv-button-primary py-3.5 text-sm font-bold flex items-center justify-center gap-2 active:scale-[0.98]"
           >
-            {copied ? <Check className="w-4 h-4 text-[#C8372D]" /> : <Copy className="w-4 h-4 text-[#C8372D]" />}
-            {copied ? 'Скопировано' : 'Скопировать ссылку'}
+            <Smartphone className="w-4 h-4" />
+            Импортировать подписку в Happ
           </button>
 
-          <button
-            onClick={() => {
-              triggerHaptic.light();
-              setShowQrModal(true);
-            }}
-            className="pv-button-secondary py-3 px-3 text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-95"
-          >
-            <QrCode className="w-4 h-4 text-[#E07A5F]" />
-            Показать QR-код
-          </button>
+          <div className="grid grid-cols-2 gap-2.5">
+            <button
+              onClick={handleCopySubscription}
+              className={`pv-button-secondary py-3 px-3 text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-95 ${
+                copied ? 'border-[#C8372D] text-[#C8372D]' : ''
+              }`}
+            >
+              {copied ? <Check className="w-4 h-4 text-[#C8372D]" /> : <Copy className="w-4 h-4 text-[#C8372D]" />}
+              {copied ? 'Скопировано' : 'Скопировать ссылку'}
+            </button>
+
+            <button
+              onClick={() => {
+                triggerHaptic.light();
+                setShowQrModal(true);
+              }}
+              className="pv-button-secondary py-3 px-3 text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-95"
+            >
+              <QrCode className="w-4 h-4 text-[#E07A5F]" />
+              Показать QR-код
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Download Happ App Downloads Card matching partizan_mvp_keys.jpg */}
+      {/* Download Happ App Card */}
       <div className="pv-card p-5 space-y-3">
         <div className="text-xs font-bold text-[#F4F0EA] uppercase tracking-wider">
           СКАЧАТЬ КЛИЕНТ HAPP
@@ -116,7 +141,7 @@ export const KeyManager: React.FC<KeyManagerProps> = ({ subscription }) => {
       </div>
 
       {/* QR Modal */}
-      {showQrModal && (
+      {showQrModal && hasSub && (
         <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
           <div className="bg-[#1A1A1C] border border-[#2D2D30] w-full max-w-sm rounded-3xl p-6 text-center space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-[#2D2D30] pb-3">

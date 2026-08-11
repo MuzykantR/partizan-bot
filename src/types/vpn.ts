@@ -19,10 +19,11 @@ export interface SubscriptionPlan {
 }
 
 export interface UserSubscription {
-  status: 'active' | 'expired' | 'trial';
+  hasSubscription: boolean;
+  status: 'inactive' | 'active' | 'expired' | 'trial';
   expireDate: string;
   daysRemaining: number;
-  subscriptionUrl: string; // Marzban subscription URL for Happ
+  subscriptionUrl: string; // Marzban subscription URL for Happ ending in /v2ray-json
   isTrafficUnlimited: boolean; // Main VPN traffic is UNLIMITED!
   whitelistUsedBytes: number; // Whitelist mode traffic (20 GB limit)
   whitelistTotalBytes: number;
