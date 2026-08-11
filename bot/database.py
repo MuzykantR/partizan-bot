@@ -50,6 +50,34 @@ class DatabaseManager:
                     created_at TEXT
                 )
             """)
+            await db.execute("""
+                CREATE TABLE IF NOT EXISTS promo_codes (
+                    code TEXT PRIMARY KEY,
+                    discount_percent INTEGER DEFAULT 0,
+                    bonus_days INTEGER DEFAULT 0,
+                    target_plan_id TEXT,
+                    max_uses INTEGER DEFAULT 0,
+                    current_uses INTEGER DEFAULT 0,
+                    expire_date TEXT,
+                    is_active INTEGER DEFAULT 1,
+                    created_at TEXT
+                )
+            """)
+            await db.execute("""
+                CREATE TABLE IF NOT EXISTS user_promocodes (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    telegram_id INTEGER NOT NULL,
+                    code TEXT NOT NULL,
+                    applied_at TEXT,
+                    UNIQUE(telegram_id, code)
+                )
+            """)
+            # Seed default promo code ПЕРМЬ
+            now_str = datetime.utcnow().isoformat()
+            await db.execute("""
+                INSERT OR IGNORE INTO promo_codes (code, discount_percent, bonus_days, target_plan_id, max_uses, current_uses, is_active, created_at)
+                VALUES ('ПЕРМЬ', 100, 30, 'plan-1m', 0, 0, 1, ?)
+            """, (now_str,))
             await db.commit()
             logger.info(f"Database initialized at {self.db_path}")
 
@@ -170,5 +198,37 @@ class DatabaseManager:
                 "referral_code": f"ref_{telegram_id}",
                 "referral_url": f"https://t.me/partizanVPNbot?start=ref_{telegram_id}"
             }
+
+    async def get_promo_code(self, code: str) -> Optional[Dict[str, Any]]:
+        clean_code = code.strip().upper()
+        async with self.get_db() as db:
+            async with db.execute("SELECT * FROM promo_codes WHERE code = ? AND is_active = 1", (clean_code,)) as cursor:
+                row = await cursor.fetchone()
+                return dict(row) if row else None
+
+    async def has_user_used_promo(self, telegram_id: int, code: str) -> bool:
+        clean_code = code.strip().upper()
+        async with self.get_db() as db:
+            async with db.execute("SELECT 1 FROM user_promocodes WHERE telegram_id = ? AND code = ?", (telegram_id, clean_code)) as cursor:
+                row = await cursor.fetchone()
+                return bool(row)
+
+    async def apply_promo_to_user(self, telegram_id: int, code: str) -> bool:
+        clean_code = code.strip().upper()
+        if await self.has_user_used_promo(telegram_id, clean_code):
+            return False
+        
+        now_str = datetime.utcnow().isoformat()
+        async with self.get_db() as db:
+            await db.execute(
+                "INSERT INTO user_promocodes (telegram_id, code, applied_at) VALUES (?, ?, ?)",
+                (telegram_id, clean_code, now_str)
+            )
+            await db.execute(
+                "UPDATE promo_codes SET current_uses = current_uses + 1 WHERE code = ?",
+                (clean_code,)
+            )
+            await db.commit()
+        return True
 
 db = DatabaseManager()

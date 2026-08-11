@@ -64,3 +64,45 @@ export async function activateTrial(): Promise<{ success: boolean; message: stri
   }
   return { success: false, message: 'Не удалось связаться с сервером Marzban' };
 }
+
+export async function validatePromoCode(code: string): Promise<{ valid: boolean; message: string; discount_percent?: number; bonus_days?: number; target_plan_id?: string }> {
+  try {
+    const initData = getInitData();
+    const response = await fetch(`${API_BASE_URL}/v1/user/validate-promo`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Telegram-Init-Data': initData,
+      },
+      body: JSON.stringify({ code }),
+    });
+
+    if (response.ok) {
+      return await response.json();
+    }
+  } catch (error) {
+    console.error('Failed to validate promo code:', error);
+  }
+  return { valid: false, message: ' Ошибка связи с сервером при проверке промокода.' };
+}
+
+export async function processPayment(planId: string, promoCode?: string): Promise<{ success: boolean; message: string; subscription?: UserSubscription }> {
+  try {
+    const initData = getInitData();
+    const response = await fetch(`${API_BASE_URL}/v1/user/process-payment`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Telegram-Init-Data': initData,
+      },
+      body: JSON.stringify({ plan_id: planId, promo_code: promoCode }),
+    });
+
+    if (response.ok) {
+      return await response.json();
+    }
+  } catch (error) {
+    console.error('Failed to process payment:', error);
+  }
+  return { success: false, message: 'Ошибка при обработке заказа на сервере.' };
+}

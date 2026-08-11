@@ -65,7 +65,7 @@ export const App: React.FC = () => {
             />
           )}
 
-          {activeTab === 'shop' && <SubscriptionShop />}
+          {activeTab === 'shop' && <SubscriptionShop onSubscriptionUpdate={loadBackendProfile} />}
 
           {activeTab === 'keys' && (
             <KeyManager

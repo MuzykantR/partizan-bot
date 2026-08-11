@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { CreditCard, Check, Tag, Zap, Info } from 'lucide-react';
+import { CreditCard, Check, Tag, Zap, Info, Loader2 } from 'lucide-react';
 import { SubscriptionPlan } from '../types/vpn';
 import { useTelegram } from '../hooks/useTelegram';
+import { validatePromoCode, processPayment } from '../services/api';
 
 const PLANS: SubscriptionPlan[] = [
   {
@@ -36,27 +37,45 @@ const PLANS: SubscriptionPlan[] = [
   },
 ];
 
-export const SubscriptionShop: React.FC = () => {
+interface SubscriptionShopProps {
+  onSubscriptionUpdate?: () => void;
+}
+
+export const SubscriptionShop: React.FC<SubscriptionShopProps> = ({ onSubscriptionUpdate }) => {
   const { triggerHaptic } = useTelegram();
   const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan>(PLANS[1]);
   const [promoCode, setPromoCode] = useState<string>('');
   const [appliedCode, setAppliedCode] = useState<string>('');
   const [promoError, setPromoError] = useState<string>('');
+  const [promoSuccessMsg, setPromoSuccessMsg] = useState<string>('');
   const [paymentSuccessMessage, setPaymentSuccessMessage] = useState<string>('');
   const [showPaymentModal, setShowPaymentModal] = useState<boolean>(false);
+  const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  const [isValidatingPromo, setIsValidatingPromo] = useState<boolean>(false);
 
-  const handleApplyPromo = (e: React.FormEvent) => {
+  const handleApplyPromo = async (e: React.FormEvent) => {
     e.preventDefault();
     triggerHaptic.light();
     const code = promoCode.trim().toUpperCase();
-    if (code === 'ПЕРМЬ' || code === 'PERM') {
-      setAppliedCode(code);
-      setPromoError('');
-      triggerHaptic.success();
-      setSelectedPlan(PLANS[0]);
-    } else {
-      setPromoError('Неверный промокод');
-      triggerHaptic.error();
+    if (!code) return;
+
+    setIsValidatingPromo(true);
+    try {
+      const res = await validatePromoCode(code);
+      if (res.valid) {
+        setAppliedCode(code);
+        setPromoError('');
+        setPromoSuccessMsg(res.message);
+        triggerHaptic.success();
+        setSelectedPlan(PLANS[0]);
+      } else {
+        setAppliedCode('');
+        setPromoError(res.message || 'Неверный промокод');
+        setPromoSuccessMsg('');
+        triggerHaptic.error();
+      }
+    } finally {
+      setIsValidatingPromo(false);
     }
   };
 
@@ -67,7 +86,36 @@ export const SubscriptionShop: React.FC = () => {
     return plan.priceRub;
   };
 
-  const handlePayRubles = () => {
+  const handlePayClick = async () => {
+    triggerHaptic.medium();
+    const finalPrice = getPlanPrice(selectedPlan);
+
+    // 0 RUB promo activation flow (no modal!)
+    if (finalPrice === 0) {
+      setIsProcessing(true);
+      try {
+        const res = await processPayment(selectedPlan.id, appliedCode);
+        if (res.success) {
+          triggerHaptic.success();
+          setPaymentSuccessMessage(res.message);
+          if (onSubscriptionUpdate) {
+            onSubscriptionUpdate();
+          }
+        } else {
+          triggerHaptic.error();
+          setPaymentSuccessMessage(res.message || 'Ошибка активации подписки');
+        }
+      } finally {
+        setIsProcessing(false);
+      }
+      return;
+    }
+
+    // For paid plans, open demo payment choice modal
+    setShowPaymentModal(true);
+  };
+
+  const handlePayRublesModal = () => {
     triggerHaptic.medium();
     const finalPrice = getPlanPrice(selectedPlan);
     
@@ -81,11 +129,7 @@ export const SubscriptionShop: React.FC = () => {
     ========================================================================
     */
 
-    if (appliedCode === 'ПЕРМЬ' || appliedCode === 'PERM') {
-      setPaymentSuccessMessage(`Промокод «ПЕРМЬ» применён! Оформлена подписка на 1 месяц бесплатно (0 ₽).`);
-    } else {
-      setPaymentSuccessMessage(`Демонстрационный режим: Тариф «${selectedPlan.name}» (${finalPrice} ₽) выбран. Оплата пока не списывается.`);
-    }
+    setPaymentSuccessMessage(`Демонстрационный режим: Заказ на тариф «${selectedPlan.name}» (${finalPrice} ₽) оформлен. Оплата пока не списывается.`);
     setShowPaymentModal(false);
     triggerHaptic.success();
   };
@@ -187,28 +231,37 @@ export const SubscriptionShop: React.FC = () => {
         </div>
         <button
           type="submit"
-          className="pv-button-primary px-5 text-sm font-bold shrink-0"
+          disabled={isValidatingPromo}
+          className="pv-button-primary px-5 text-sm font-bold shrink-0 flex items-center gap-1"
         >
-          {appliedCode ? 'Применён' : 'Применить'}
+          {isValidatingPromo ? <Loader2 className="w-4 h-4 animate-spin" /> : (appliedCode ? 'Применён' : 'Применить')}
         </button>
       </form>
+
       {appliedCode && (
         <p className="text-xs text-emerald-400 px-1 font-bold">
-          Промокод «{appliedCode}» успешно применён! {appliedCode === 'ПЕРМЬ' ? 'Тариф 1 месяц за 0 ₽' : ''}
+          {promoSuccessMsg || `Промокод «${appliedCode}» успешно применён! Тариф 1 месяц за 0 ₽`}
         </p>
       )}
       {promoError && <p className="text-xs text-[#C8372D] px-1 font-bold">{promoError}</p>}
 
-      {/* Pay CTA Button */}
+      {/* Pay CTA Button (Strictly "Оплатить") */}
       <button
-        onClick={() => {
-          triggerHaptic.medium();
-          setShowPaymentModal(true);
-        }}
-        className="w-full pv-button-primary py-4 text-base font-bold flex items-center justify-center gap-2 active:scale-[0.98]"
+        onClick={handlePayClick}
+        disabled={isProcessing}
+        className="w-full pv-button-primary py-4 text-base font-extrabold flex items-center justify-center gap-2 active:scale-[0.98] shadow-xl shadow-[#C8372D]/30"
       >
-        <Zap className="w-5 h-5 fill-current" />
-        Оплатить подписку «{selectedPlan.name}» ({getPlanPrice(selectedPlan)} ₽)
+        {isProcessing ? (
+          <>
+            <Loader2 className="w-5 h-5 animate-spin" />
+            <span>Обработка подписки...</span>
+          </>
+        ) : (
+          <>
+            <Zap className="w-5 h-5 fill-current" />
+            <span>Оплатить ({getPlanPrice(selectedPlan)} ₽)</span>
+          </>
+        )}
       </button>
 
       {/* Payment Selector Modal */}
@@ -227,7 +280,7 @@ export const SubscriptionShop: React.FC = () => {
 
             <div className="space-y-2.5">
               <button
-                onClick={handlePayRubles}
+                onClick={handlePayRublesModal}
                 className="w-full bg-[#0E0E10] hover:bg-[#251B1B] border border-[#C8372D]/50 p-4 rounded-2xl flex items-center justify-between transition-all group"
               >
                 <div className="flex items-center gap-3">
