@@ -33,7 +33,7 @@ class DatabaseManager:
                     first_name TEXT,
                     marzban_username TEXT,
                     referrer_id INTEGER,
-                    status TEXT DEFAULT 'trial',
+                    status TEXT DEFAULT 'inactive',
                     expire_date TEXT,
                     is_pro INTEGER DEFAULT 0,
                     has_used_trial INTEGER DEFAULT 0,
@@ -82,14 +82,13 @@ class DatabaseManager:
                 
                 await db.execute("""
                     INSERT INTO users (telegram_id, username, first_name, marzban_username, referrer_id, status, expire_date, is_pro, has_used_trial, created_at)
-                    VALUES (?, ?, ?, ?, ?, 'trial', ?, 0, 0, ?)
+                    VALUES (?, ?, ?, ?, ?, 'inactive', NULL, 0, 0, ?)
                 """, (
                     telegram_id,
                     username,
                     first_name,
                     f"partizan_{telegram_id}",
                     valid_referrer,
-                    (datetime.utcnow() + timedelta(days=settings.trial_days)).isoformat(),
                     now_str
                 ))
                 await db.commit()
@@ -169,7 +168,7 @@ class DatabaseManager:
                 "recruits_count": count,
                 "earned_bonus_days": total_days,
                 "referral_code": f"ref_{telegram_id}",
-                "referral_url": f"https://t.me/axisforge_vpn_bot?start=ref_{telegram_id}"
+                "referral_url": f"https://t.me/partizanVPNbot?start=ref_{telegram_id}"
             }
 
 db = DatabaseManager()
