@@ -78,8 +78,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ subscription, onNavigateTo
           </h2>
           <p className="text-xs text-[#9E9B97] mt-1 max-w-xs leading-relaxed">
             {hasSub
-              ? 'Ваше персональное подключение к защищённой сети PARTIZAN'
-              : 'Быстрое и защищённое подключение к сети PARTIZAN'}
+              ? 'Ваше персональное подключение к ПАРТИЗАН VPN'
+              : 'Быстрое и защищённое подключение к ПАРТИЗАН VPN'}
           </p>
         </div>
       </div>

@@ -49,13 +49,11 @@ export const SubscriptionShop: React.FC = () => {
     e.preventDefault();
     triggerHaptic.light();
     const code = promoCode.trim().toUpperCase();
-    if (code === 'ПЕРМЬ' || code === 'PERM' || code === 'VIBEVIP' || code === 'TELEGRAM' || code === 'PARTIZAN') {
+    if (code === 'ПЕРМЬ' || code === 'PERM') {
       setAppliedCode(code);
       setPromoError('');
       triggerHaptic.success();
-      if (code === 'ПЕРМЬ' || code === 'PERM') {
-        setSelectedPlan(PLANS[0]);
-      }
+      setSelectedPlan(PLANS[0]);
     } else {
       setPromoError('Неверный промокод');
       triggerHaptic.error();
@@ -65,9 +63,6 @@ export const SubscriptionShop: React.FC = () => {
   const getPlanPrice = (plan: SubscriptionPlan) => {
     if (appliedCode === 'ПЕРМЬ' || appliedCode === 'PERM') {
       if (plan.id === 'plan-1m') return 0;
-    }
-    if (appliedCode) {
-      return Math.round(plan.priceRub * 0.9);
     }
     return plan.priceRub;
   };
