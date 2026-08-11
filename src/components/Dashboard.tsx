@@ -131,7 +131,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ subscription, onNavigateTo
             className="w-full pv-button-primary py-4 text-base font-extrabold flex items-center justify-center text-center active:scale-[0.98] shadow-xl shadow-[#C8372D]/30 px-4"
           >
             <Zap className="w-5 h-5 fill-current animate-bounce shrink-0 mr-1.5" />
-            <span>{isActivating ? 'Создание в Marzban...' : 'Активировать 3 дня бесплатно'}</span>
+            <span>{isActivating ? 'Создание подписки...' : 'Активировать 3 дня бесплатно'}</span>
           </button>
         </div>
       ) : (
