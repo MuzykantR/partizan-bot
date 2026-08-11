@@ -11,7 +11,7 @@ interface DashboardProps {
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({ subscription, onNavigateToShop: _onNavigateToShop, onActivateTrial }) => {
-  const { triggerHaptic, openLink } = useTelegram();
+  const { triggerHaptic } = useTelegram();
   const [copied, setCopied] = useState<boolean>(false);
   const [showQrModal, setShowQrModal] = useState<boolean>(false);
   const [isActivating, setIsActivating] = useState<boolean>(false);
@@ -25,16 +25,26 @@ export const Dashboard: React.FC<DashboardProps> = ({ subscription, onNavigateTo
 
   const handleOpenHapp = () => {
     triggerHaptic.medium();
-    const deepLink = `happ://add/${encodeURIComponent(subscription.subscriptionUrl)}`;
+    const rawUrl = subscription.subscriptionUrl;
+    const happUrl = `happ://add/${rawUrl}`;
+    
     try {
-      if (window.Telegram?.WebApp?.openLink) {
-        window.Telegram.WebApp.openLink(deepLink);
-      } else {
-        openLink(deepLink);
-      }
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.src = happUrl;
+      document.body.appendChild(iframe);
+      setTimeout(() => {
+        if (document.body.contains(iframe)) {
+          document.body.removeChild(iframe);
+        }
+      }, 1000);
     } catch {
-      handleCopySubscription();
+      // fallback
     }
+
+    setTimeout(() => {
+      window.location.href = happUrl;
+    }, 150);
   };
 
   const handleActivateClick = async () => {

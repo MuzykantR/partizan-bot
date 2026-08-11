@@ -27,16 +27,26 @@ export const KeyManager: React.FC<KeyManagerProps> = ({ subscription, onNavigate
   const handleOpenHapp = () => {
     if (!hasSub) return;
     triggerHaptic.medium();
-    const deepLink = `happ://add/${encodeURIComponent(subscription.subscriptionUrl)}`;
+    const rawUrl = subscription.subscriptionUrl;
+    const happUrl = `happ://add/${rawUrl}`;
+    
     try {
-      if (window.Telegram?.WebApp?.openLink) {
-        window.Telegram.WebApp.openLink(deepLink);
-      } else {
-        window.location.href = deepLink;
-      }
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.src = happUrl;
+      document.body.appendChild(iframe);
+      setTimeout(() => {
+        if (document.body.contains(iframe)) {
+          document.body.removeChild(iframe);
+        }
+      }, 1000);
     } catch {
-      handleCopySubscription();
+      // fallback
     }
+
+    setTimeout(() => {
+      window.location.href = happUrl;
+    }, 150);
   };
 
   return (
