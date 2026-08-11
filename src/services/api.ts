@@ -1,6 +1,6 @@
 import { UserSubscription } from '../types/vpn';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://axisforge.tech/twa-api';
 
 export interface UserProfileResponse {
   telegram_id: number;
@@ -26,7 +26,7 @@ export function getInitData(): string {
 export async function fetchUserProfile(): Promise<UserProfileResponse | null> {
   try {
     const initData = getInitData();
-    const response = await fetch(`${API_BASE_URL}/api/v1/user/profile`, {
+    const response = await fetch(`${API_BASE_URL}/v1/user/profile`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -46,7 +46,7 @@ export async function fetchUserProfile(): Promise<UserProfileResponse | null> {
 export async function activateTrial(): Promise<{ success: boolean; message: string; subscription_url?: string }> {
   try {
     const initData = getInitData();
-    const response = await fetch(`${API_BASE_URL}/api/v1/user/activate-trial`, {
+    const response = await fetch(`${API_BASE_URL}/v1/user/activate-trial`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
