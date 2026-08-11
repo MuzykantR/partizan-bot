@@ -7,6 +7,12 @@ dist/
 build/
 .cache/
 
+# Python cache & sqlite DB
+__pycache__/
+*.pyc
+*.db
+*.sqlite3
+
 # Environment variables
 .env
 .env.local

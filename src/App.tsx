@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TabType, Navigation } from './components/Navigation';
 import { Dashboard } from './components/Dashboard';
 import { SubscriptionShop } from './components/SubscriptionShop';
@@ -6,16 +6,17 @@ import { KeyManager } from './components/KeyManager';
 import { SetupGuide } from './components/SetupGuide';
 import { ProfileSettings } from './components/ProfileSettings';
 import { UserSubscription } from './types/vpn';
+import { fetchUserProfile } from './services/api';
 
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
 
-  // Mock subscription populated with production PARTIZAN VLESS-XHTTP specs
-  const [subscription] = useState<UserSubscription>({
+  // Subscription state populated with Marzban VLESS-XHTTP specs and /v2ray-json endpoint
+  const [subscription, setSubscription] = useState<UserSubscription>({
     status: 'active',
     expireDate: '2026-12-31',
     daysRemaining: 145,
-    subscriptionUrl: 'https://axisforge.tech/274ba6b74d0c6820/9e8b7c6a5d4e3f2a1b0c',
+    subscriptionUrl: 'https://axisforge.tech/274ba6b74d0c6820/9e8b7c6a5d4e3f2a1b0c/v2ray-json',
     isTrafficUnlimited: true, // Main VPN traffic is UNLIMITED!
     whitelistUsedBytes: 4.2 * 1024 * 1024 * 1024, // 4.2 GB used of 20 GB Whitelist limit
     whitelistTotalBytes: 20 * 1024 * 1024 * 1024,
@@ -30,6 +31,16 @@ export const App: React.FC = () => {
       { id: 'us-nyc', country: 'США', city: 'Нью-Йорк', flag: '🇺🇸', protocol: 'VLESS-XHTTP' },
     ],
   });
+
+  useEffect(() => {
+    async function loadBackendProfile() {
+      const profile = await fetchUserProfile();
+      if (profile && profile.subscription) {
+        setSubscription(profile.subscription);
+      }
+    }
+    loadBackendProfile();
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#121212] text-[#F4F0EA] relative">
