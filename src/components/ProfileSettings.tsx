@@ -36,7 +36,7 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ subscription }
 
   const handleShareReferral = () => {
     triggerHaptic.light();
-    const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent('🛡️ Присоединяйся к ПАРТИЗАН VPN! Получи бесплатный VLESS-XHTTP доступ в обход любых блокировок!')}`;
+    const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent('🛡️ Присоединяйся к ПАРТИЗАН VPN! Получи бесплатный доступ в обход любых блокировок!')}`;
     openLink(shareUrl);
   };
 
@@ -93,7 +93,7 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ subscription }
       {/* Account Info Stats Grid */}
       <div className="grid grid-cols-2 gap-3">
         <div className="pv-card p-4 text-center space-y-1">
-          <div className="text-xs text-[#9E9B97] font-medium">Рекруты отряда</div>
+          <div className="text-xs text-[#9E9B97] font-medium">Приглашённые пользователи</div>
           <div className="text-xl font-bold text-[#F4F0EA] flex items-center justify-center gap-1.5">
             <Users className="w-4 h-4 text-[#C8372D]" />
             <span>{profileData?.referrals?.recruits_count || 0}</span>
@@ -112,10 +112,10 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ subscription }
       {/* Referral Card */}
       <div className="pv-card-glow p-5 space-y-3">
         <div className="text-base font-bold text-[#F4F0EA]">
-          «Партизанский Отряд» (+7 дней за друга)
+          «Пригласи друга» (+7 дней за друга)
         </div>
         <p className="text-xs text-[#9E9B97] leading-relaxed">
-          Отправьте ссылку другу. При первой активации им подписки вы мгновенно получите +7 дней бесперебойного VPN!
+          Отправьте ссылку другу. При первой активации им подписки вы мгновенно получите +7 дней к вашей подписке!
         </p>
 
         <div className="text-xs text-[#F4F0EA] font-mono truncate bg-[#0E0E10] border border-[#2D2D30] rounded-xl p-2.5">

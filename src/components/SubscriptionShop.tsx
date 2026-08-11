@@ -40,7 +40,7 @@ export const SubscriptionShop: React.FC = () => {
   const { triggerHaptic } = useTelegram();
   const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan>(PLANS[1]);
   const [promoCode, setPromoCode] = useState<string>('');
-  const [promoApplied, setPromoApplied] = useState<boolean>(false);
+  const [appliedCode, setAppliedCode] = useState<string>('');
   const [promoError, setPromoError] = useState<string>('');
   const [paymentSuccessMessage, setPaymentSuccessMessage] = useState<string>('');
   const [showPaymentModal, setShowPaymentModal] = useState<boolean>(false);
@@ -48,19 +48,33 @@ export const SubscriptionShop: React.FC = () => {
   const handleApplyPromo = (e: React.FormEvent) => {
     e.preventDefault();
     triggerHaptic.light();
-    if (promoCode.trim().toUpperCase() === 'VIBEVIP' || promoCode.trim().toUpperCase() === 'TELEGRAM' || promoCode.trim().toUpperCase() === 'PARTIZAN') {
-      setPromoApplied(true);
+    const code = promoCode.trim().toUpperCase();
+    if (code === 'ПЕРМЬ' || code === 'PERM' || code === 'VIBEVIP' || code === 'TELEGRAM' || code === 'PARTIZAN') {
+      setAppliedCode(code);
       setPromoError('');
       triggerHaptic.success();
+      if (code === 'ПЕРМЬ' || code === 'PERM') {
+        setSelectedPlan(PLANS[0]);
+      }
     } else {
       setPromoError('Неверный промокод');
       triggerHaptic.error();
     }
   };
 
+  const getPlanPrice = (plan: SubscriptionPlan) => {
+    if (appliedCode === 'ПЕРМЬ' || appliedCode === 'PERM') {
+      if (plan.id === 'plan-1m') return 0;
+    }
+    if (appliedCode) {
+      return Math.round(plan.priceRub * 0.9);
+    }
+    return plan.priceRub;
+  };
+
   const handlePayRubles = () => {
     triggerHaptic.medium();
-    const finalPrice = promoApplied ? Math.round(selectedPlan.priceRub * 0.9) : selectedPlan.priceRub;
+    const finalPrice = getPlanPrice(selectedPlan);
     
     /* 
     ========================================================================
@@ -72,8 +86,11 @@ export const SubscriptionShop: React.FC = () => {
     ========================================================================
     */
 
-    // Демонстрационный режим:
-    setPaymentSuccessMessage(`Демонстрационный режим: Тариф «${selectedPlan.name}» (${finalPrice} ₽) отображен. Оплата пока не списывается.`);
+    if (appliedCode === 'ПЕРМЬ' || appliedCode === 'PERM') {
+      setPaymentSuccessMessage(`Промокод «ПЕРМЬ» применён! Оформлена подписка на 1 месяц бесплатно (0 ₽).`);
+    } else {
+      setPaymentSuccessMessage(`Демонстрационный режим: Тариф «${selectedPlan.name}» (${finalPrice} ₽) выбран. Оплата пока не списывается.`);
+    }
     setShowPaymentModal(false);
     triggerHaptic.success();
   };
@@ -101,7 +118,7 @@ export const SubscriptionShop: React.FC = () => {
       <div className="space-y-3.5">
         {PLANS.map((plan) => {
           const isSelected = selectedPlan.id === plan.id;
-          const discountedPrice = promoApplied ? Math.round(plan.priceRub * 0.9) : plan.priceRub;
+          const discountedPrice = getPlanPrice(plan);
 
           return (
             <div
@@ -137,7 +154,7 @@ export const SubscriptionShop: React.FC = () => {
 
                 <div className="flex-1">
                   <div className="text-lg font-bold text-[#F4F0EA]">
-                    {plan.name} - {discountedPrice} ₽ <span className="text-xs font-normal text-[#9E9B97]">/ {plan.durationMonths} мес</span>
+                    {plan.name} - <span className={discountedPrice === 0 ? 'text-[#C8372D]' : ''}>{discountedPrice} ₽</span> <span className="text-xs font-normal text-[#9E9B97]">/ {plan.durationMonths} мес</span>
                   </div>
 
                   <p className="text-xs text-[#9E9B97] mt-1 leading-relaxed">
@@ -169,17 +186,22 @@ export const SubscriptionShop: React.FC = () => {
             type="text"
             value={promoCode}
             onChange={(e) => setPromoCode(e.target.value)}
-            placeholder="Введите промокод"
-            className="bg-transparent text-sm text-[#F4F0EA] placeholder-[#9E9B97] focus:outline-none w-full"
+            placeholder="Введите промокод (например, ПЕРМЬ)"
+            className="bg-transparent text-sm text-[#F4F0EA] placeholder-[#9E9B97] focus:outline-none w-full uppercase"
           />
         </div>
         <button
           type="submit"
           className="pv-button-primary px-5 text-sm font-bold shrink-0"
         >
-          {promoApplied ? 'Применён' : 'Применить'}
+          {appliedCode ? 'Применён' : 'Применить'}
         </button>
       </form>
+      {appliedCode && (
+        <p className="text-xs text-emerald-400 px-1 font-bold">
+          Промокод «{appliedCode}» успешно применён! {appliedCode === 'ПЕРМЬ' ? 'Тариф 1 месяц за 0 ₽' : ''}
+        </p>
+      )}
       {promoError && <p className="text-xs text-[#C8372D] px-1 font-bold">{promoError}</p>}
 
       {/* Pay CTA Button */}
@@ -191,7 +213,7 @@ export const SubscriptionShop: React.FC = () => {
         className="w-full pv-button-primary py-4 text-base font-bold flex items-center justify-center gap-2 active:scale-[0.98]"
       >
         <Zap className="w-5 h-5 fill-current" />
-        Оплатить подписку «{selectedPlan.name}»
+        Оплатить подписку «{selectedPlan.name}» ({getPlanPrice(selectedPlan)} ₽)
       </button>
 
       {/* Payment Selector Modal */}
@@ -219,11 +241,11 @@ export const SubscriptionShop: React.FC = () => {
                   </div>
                   <div className="text-left">
                     <div className="text-sm font-bold text-[#F4F0EA]">Демонстрационная оплата</div>
-                    <div className="text-xs text-[#9E9B97]">МИР, СБП, СберПэй, T-Pay (без списания)</div>
+                    <div className="text-xs text-[#9E9B97]">МИР, СБП, СберПэй, T-Pay</div>
                   </div>
                 </div>
                 <div className="text-base font-bold text-[#F4F0EA]">
-                  {promoApplied ? Math.round(selectedPlan.priceRub * 0.9) : selectedPlan.priceRub} ₽
+                  {getPlanPrice(selectedPlan)} ₽
                 </div>
               </button>
             </div>

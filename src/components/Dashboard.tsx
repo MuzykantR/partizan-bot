@@ -78,8 +78,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ subscription, onNavigateTo
           </h2>
           <p className="text-xs text-[#9E9B97] mt-1 max-w-xs leading-relaxed">
             {hasSub
-              ? 'Ваш доступ VLESS-XHTTP настроен и готов к подключению'
-              : 'Создайте персональный ключ в Marzban и получите 3 дня бесплатного доступа'}
+              ? 'Ваше персональное подключение к защищённой сети PARTIZAN'
+              : 'Быстрое и защищённое подключение к сети PARTIZAN'}
           </p>
         </div>
       </div>
@@ -101,7 +101,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ subscription, onNavigateTo
           </button>
           <div className="flex items-center justify-between text-[11px] text-[#9E9B97] pt-1">
             <span>Без привязки карты</span>
-            <span>VLESS-XHTTP TLS 1.3</span>
+            <span>Высокая скорость</span>
             <span>1 Гбит/с</span>
           </div>
         </div>
@@ -168,38 +168,22 @@ export const Dashboard: React.FC<DashboardProps> = ({ subscription, onNavigateTo
         </div>
       )}
 
-      {/* Server Locations Grid */}
+      {/* Server Locations Grid (Germany only & Germany Whitelist) */}
       <div className="grid grid-cols-2 gap-2.5 pt-1">
         <div className="pv-card p-3.5 flex items-center justify-between">
           <div>
-            <div className="text-xs font-bold text-[#F4F0EA]">Франкфурт,</div>
             <div className="text-xs font-bold text-[#F4F0EA]">Германия</div>
+            <div className="text-[11px] text-[#9E9B97]">Основной сервер</div>
           </div>
           <span className="text-2xl">🇩🇪</span>
         </div>
 
         <div className="pv-card p-3.5 flex items-center justify-between">
           <div>
-            <div className="text-xs font-bold text-[#F4F0EA]">Амстердам,</div>
-            <div className="text-xs font-bold text-[#F4F0EA]">Нидерланды</div>
+            <div className="text-xs font-bold text-[#F4F0EA]">Белые списки</div>
+            <div className="text-[11px] text-[#9E9B97]">[Германия]</div>
           </div>
-          <span className="text-2xl">🇳🇱</span>
-        </div>
-
-        <div className="pv-card p-3.5 flex items-center justify-between">
-          <div>
-            <div className="text-xs font-bold text-[#F4F0EA]">Хельсинки,</div>
-            <div className="text-xs font-bold text-[#F4F0EA]">Финляндия</div>
-          </div>
-          <span className="text-2xl">🇫🇮</span>
-        </div>
-
-        <div className="pv-card p-3.5 flex items-center justify-between">
-          <div>
-            <div className="text-xs font-bold text-[#F4F0EA]">Вашингтон,</div>
-            <div className="text-xs font-bold text-[#F4F0EA]">США</div>
-          </div>
-          <span className="text-2xl">🇺🇸</span>
+          <span className="text-2xl">🇩🇪</span>
         </div>
       </div>
 
