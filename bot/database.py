@@ -3,6 +3,7 @@ import aiosqlite
 import logging
 from datetime import datetime, timedelta
 from typing import Optional, Dict, Any, List
+from contextlib import asynccontextmanager
 from bot.config import settings
 
 logger = logging.getLogger(__name__)
@@ -11,15 +12,20 @@ class DatabaseManager:
     def __init__(self, db_path: str = settings.database_path):
         self.db_path = db_path
 
-    async def get_connection(self) -> aiosqlite.Connection:
+    @asynccontextmanager
+    async def get_db(self):
+        """Async context manager for SQLite connection."""
         conn = await aiosqlite.connect(self.db_path)
         conn.row_factory = aiosqlite.Row
-        return conn
+        try:
+            yield conn
+        finally:
+            await conn.close()
 
     async def init_db(self):
         """Initializes database schema if tables do not exist."""
         os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
-        async with await self.get_connection() as db:
+        async with self.get_db() as db:
             await db.execute("""
                 CREATE TABLE IF NOT EXISTS users (
                     telegram_id INTEGER PRIMARY KEY,
@@ -48,7 +54,7 @@ class DatabaseManager:
             logger.info(f"Database initialized at {self.db_path}")
 
     async def get_user(self, telegram_id: int) -> Optional[Dict[str, Any]]:
-        async with await self.get_connection() as db:
+        async with self.get_db() as db:
             async with db.execute("SELECT * FROM users WHERE telegram_id = ?", (telegram_id,)) as cursor:
                 row = await cursor.fetchone()
                 return dict(row) if row else None
@@ -64,16 +70,14 @@ class DatabaseManager:
         existing = await self.get_user(telegram_id)
         now_str = datetime.utcnow().isoformat()
         
-        async with await self.get_connection() as db:
+        async with self.get_db() as db:
             if existing:
                 await db.execute(
                     "UPDATE users SET username = ?, first_name = ? WHERE telegram_id = ?",
                     (username, first_name, telegram_id)
                 )
                 await db.commit()
-                return await self.get_user(telegram_id)
             else:
-                # Do not allow self-referral
                 valid_referrer = referrer_id if referrer_id and referrer_id != telegram_id else None
                 
                 await db.execute("""
@@ -90,7 +94,8 @@ class DatabaseManager:
                 ))
                 await db.commit()
                 logger.info(f"New user registered: {telegram_id} (Referrer: {valid_referrer})")
-                return await self.get_user(telegram_id)
+                
+        return await self.get_user(telegram_id)
 
     async def update_marzban_details(
         self,
@@ -99,7 +104,7 @@ class DatabaseManager:
         expire_date: str,
         status: str = 'active'
     ):
-        async with await self.get_connection() as db:
+        async with self.get_db() as db:
             await db.execute("""
                 UPDATE users
                 SET marzban_username = ?, expire_date = ?, status = ?
@@ -108,7 +113,7 @@ class DatabaseManager:
             await db.commit()
 
     async def mark_trial_used(self, telegram_id: int):
-        async with await self.get_connection() as db:
+        async with self.get_db() as db:
             await db.execute(
                 "UPDATE users SET has_used_trial = 1, status = 'active' WHERE telegram_id = ?",
                 (telegram_id,)
@@ -130,7 +135,7 @@ class DatabaseManager:
         new_expire = current_expire + timedelta(days=days)
         new_expire_str = new_expire.isoformat()
         
-        async with await self.get_connection() as db:
+        async with self.get_db() as db:
             await db.execute(
                 "UPDATE users SET expire_date = ?, status = 'active' WHERE telegram_id = ?",
                 (new_expire_str, telegram_id)
@@ -141,7 +146,7 @@ class DatabaseManager:
     async def add_referral_reward(self, referrer_id: int, referred_id: int, bonus_days: int):
         """Records referral reward and extends referrer subscription."""
         now_str = datetime.utcnow().isoformat()
-        async with await self.get_connection() as db:
+        async with self.get_db() as db:
             await db.execute("""
                 INSERT INTO referrals (referrer_id, referred_id, bonus_days, status, created_at)
                 VALUES (?, ?, ?, 'rewarded', ?)
@@ -151,7 +156,7 @@ class DatabaseManager:
         await self.add_user_days(referrer_id, bonus_days)
 
     async def get_referral_stats(self, telegram_id: int) -> Dict[str, Any]:
-        async with await self.get_connection() as db:
+        async with self.get_db() as db:
             async with db.execute(
                 "SELECT COUNT(*) as count, SUM(bonus_days) as total_days FROM referrals WHERE referrer_id = ?",
                 (telegram_id,)

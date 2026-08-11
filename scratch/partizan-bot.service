@@ -1,0 +1,15 @@
+[Unit]
+Description=PARTIZAN VPN Telegram Bot and TWA FastAPI Service
+After=network.target docker.service
+
+[Service]
+Type=simple
+User=admin
+WorkingDirectory=/opt/partizan-vpn-bot
+EnvironmentFile=/opt/partizan-vpn-bot/bot/.env
+ExecStart=/opt/partizan-vpn-bot/venv/bin/python -m bot.main
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
