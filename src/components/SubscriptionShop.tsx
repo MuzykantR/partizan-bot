@@ -143,16 +143,6 @@ export const SubscriptionShop: React.FC<SubscriptionShopProps> = ({ onSubscripti
         </h1>
       </div>
 
-      {paymentSuccessMessage && (
-        <div className="bg-[#1F1616] border border-[#C8372D] rounded-2xl p-4 text-[#F4F0EA] text-sm flex items-center justify-between shadow-xl">
-          <div className="flex items-center gap-2">
-            <Info className="w-5 h-5 text-[#C8372D] shrink-0" />
-            <span className="text-xs leading-relaxed">{paymentSuccessMessage}</span>
-          </div>
-          <button onClick={() => setPaymentSuccessMessage('')} className="text-xs text-[#C8372D] font-bold underline shrink-0">OK</button>
-        </div>
-      )}
-
       {/* Tariff Cards */}
       <div className="space-y-3.5">
         {PLANS.map((plan) => {
@@ -225,7 +215,7 @@ export const SubscriptionShop: React.FC<SubscriptionShopProps> = ({ onSubscripti
             type="text"
             value={promoCode}
             onChange={(e) => setPromoCode(e.target.value)}
-            placeholder="Введите промокод (например, ПЕРМЬ)"
+            placeholder="ПРОМОКОД"
             className="bg-transparent text-sm text-[#F4F0EA] placeholder-[#9E9B97] focus:outline-none w-full uppercase"
           />
         </div>
@@ -245,6 +235,17 @@ export const SubscriptionShop: React.FC<SubscriptionShopProps> = ({ onSubscripti
       )}
       {promoError && <p className="text-xs text-[#C8372D] px-1 font-bold">{promoError}</p>}
 
+      {/* Payment Result Notice (Between Promo and Pay Button) */}
+      {paymentSuccessMessage && (
+        <div className="bg-[#1F1616] border border-[#C8372D] rounded-2xl p-4 text-[#F4F0EA] text-sm flex items-center justify-between shadow-xl my-2">
+          <div className="flex items-center gap-2">
+            <Info className="w-5 h-5 text-[#C8372D] shrink-0" />
+            <span className="text-xs leading-relaxed">{paymentSuccessMessage}</span>
+          </div>
+          <button onClick={() => setPaymentSuccessMessage('')} className="text-xs text-[#C8372D] font-bold underline shrink-0">OK</button>
+        </div>
+      )}
+
       {/* Pay CTA Button (Strictly "Оплатить") */}
       <button
         onClick={handlePayClick}
@@ -254,7 +255,7 @@ export const SubscriptionShop: React.FC<SubscriptionShopProps> = ({ onSubscripti
         {isProcessing ? (
           <>
             <Loader2 className="w-5 h-5 animate-spin" />
-            <span>Обработка подписки...</span>
+            <span>Обработка...</span>
           </>
         ) : (
           <>

@@ -27,7 +27,16 @@ export const KeyManager: React.FC<KeyManagerProps> = ({ subscription, onNavigate
   const handleOpenHapp = () => {
     if (!hasSub) return;
     triggerHaptic.medium();
-    window.location.href = `happ://add/${encodeURIComponent(subscription.subscriptionUrl)}`;
+    const deepLink = `happ://add/${encodeURIComponent(subscription.subscriptionUrl)}`;
+    try {
+      if (window.Telegram?.WebApp?.openLink) {
+        window.Telegram.WebApp.openLink(deepLink);
+      } else {
+        window.location.href = deepLink;
+      }
+    } catch {
+      handleCopySubscription();
+    }
   };
 
   return (
@@ -46,7 +55,7 @@ export const KeyManager: React.FC<KeyManagerProps> = ({ subscription, onNavigate
           <div>
             <h3 className="text-lg font-bold text-[#F4F0EA]">Подписка еще не создана</h3>
             <p className="text-xs text-[#9E9B97] mt-1 leading-relaxed">
-              Активируйте 3 дня бесплатного доступа на Главном экране, чтобы получить персональную ссылку подписки VLESS-XHTTP.
+              Активируйте 3 дня бесплатного доступа на Главном экране, чтобы получить персональную ссылку подписки.
             </p>
           </div>
           {onNavigateToDashboard && (
@@ -64,7 +73,7 @@ export const KeyManager: React.FC<KeyManagerProps> = ({ subscription, onNavigate
       ) : (
         <div className="pv-card p-5 space-y-4">
           <div className="text-xs font-bold text-[#F4F0EA] uppercase tracking-wider">
-            ПЕРСОНАЛЬНАЯ ССЫЛКА ПОДПИСКИ HAPP VLESS-XHTTP
+            ПЕРСОНАЛЬНАЯ ССЫЛКА ПОДПИСКИ HAPP
           </div>
 
           <div className="bg-[#0E0E10] border border-[#2D2D30] rounded-2xl p-3 text-xs text-[#F4F0EA] font-mono flex items-center justify-between gap-2">
@@ -115,7 +124,7 @@ export const KeyManager: React.FC<KeyManagerProps> = ({ subscription, onNavigate
 
         <div className="grid grid-cols-2 gap-2.5">
           <button
-            onClick={() => openLink('https://apps.apple.com/app/happ-proxy-utility/id6504287905')}
+            onClick={() => openLink('https://apps.apple.com/us/app/happ-proxy-utility/id6504287215')}
             className="pv-button-secondary p-3.5 text-left transition-all flex items-center gap-3"
           >
             <Apple className="w-6 h-6 text-[#F4F0EA] shrink-0" />
@@ -126,7 +135,7 @@ export const KeyManager: React.FC<KeyManagerProps> = ({ subscription, onNavigate
           </button>
 
           <button
-            onClick={() => openLink('https://play.google.com/store/apps/details?id=com.happ.proxy')}
+            onClick={() => openLink('https://play.google.com/store/apps/details?id=com.happproxy')}
             className="pv-button-secondary p-3.5 text-left transition-all flex items-center gap-3"
           >
             <div className="w-6 h-6 rounded-lg bg-[#F4F0EA] text-[#121212] flex items-center justify-center font-bold text-xs shrink-0">

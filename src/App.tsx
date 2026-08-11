@@ -3,7 +3,6 @@ import { TabType, Navigation } from './components/Navigation';
 import { Dashboard } from './components/Dashboard';
 import { SubscriptionShop } from './components/SubscriptionShop';
 import { KeyManager } from './components/KeyManager';
-import { SetupGuide } from './components/SetupGuide';
 import { ProfileSettings } from './components/ProfileSettings';
 import { UserSubscription } from './types/vpn';
 import { fetchUserProfile, activateTrial } from './services/api';
@@ -27,9 +26,6 @@ export const App: React.FC = () => {
     maxDevicesCount: 5,
     availableLocations: [
       { id: 'de-aeza', country: 'Германия', city: 'Франкфурт (Aeza 9950X)', flag: '🇩🇪', protocol: 'VLESS-XHTTP' },
-      { id: 'nl-ams', country: 'Нидерланды', city: 'Амстердам', flag: '🇳🇱', protocol: 'VLESS-XHTTP' },
-      { id: 'fi-hel', country: 'Финляндия', city: 'Хельсинки', flag: '🇫🇮', protocol: 'VLESS-XHTTP' },
-      { id: 'us-nyc', country: 'США', city: 'Нью-Йорк', flag: '🇺🇸', protocol: 'VLESS-XHTTP' },
     ],
   });
 
@@ -73,8 +69,6 @@ export const App: React.FC = () => {
               onNavigateToDashboard={() => setActiveTab('dashboard')}
             />
           )}
-
-          {activeTab === 'guide' && <SetupGuide />}
 
           {activeTab === 'profile' && <ProfileSettings subscription={subscription} />}
         </main>

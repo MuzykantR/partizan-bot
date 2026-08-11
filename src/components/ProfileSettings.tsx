@@ -9,7 +9,7 @@ interface ProfileSettingsProps {
 }
 
 export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ subscription }) => {
-  const { user, triggerHaptic, openLink } = useTelegram();
+  const { user, triggerHaptic, openLink: _openLink } = useTelegram();
   const [referralCopied, setReferralCopied] = useState<boolean>(false);
   const [profileData, setProfileData] = useState<UserProfileResponse | null>(null);
 
@@ -37,12 +37,26 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ subscription }
   const handleShareReferral = () => {
     triggerHaptic.light();
     const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent('🛡️ Присоединяйся к ПАРТИЗАН VPN! Получи бесплатный доступ в обход любых блокировок!')}`;
-    openLink(shareUrl);
+    try {
+      if (window.Telegram?.WebApp?.openLink) {
+        window.Telegram.WebApp.openLink(shareUrl);
+      } else {
+        window.open(shareUrl, '_blank');
+      }
+    } catch {
+      handleCopyReferral();
+    }
   };
 
   const handleContactSupport = () => {
     triggerHaptic.light();
-    openLink('https://t.me/axisforge_support_bot');
+    /*
+    ========================================================================
+    ОРИГИНАЛЬНЫЙ ПЕРЕХОД В БОТ ПОДДЕРЖКИ (ЗАКОММЕНТИРОВАНО ПО ТРЕБОВАНИЮ):
+    _openLink('https://t.me/axisforge_support_bot');
+    ========================================================================
+    */
+    alert('Служба поддержки 24/7 работает в демонстрационном режиме.');
   };
 
   const isSubActive = subscription.hasSubscription && subscription.status !== 'inactive';

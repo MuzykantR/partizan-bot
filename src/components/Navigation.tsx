@@ -1,8 +1,8 @@
 import React from 'react';
-import { Home, Wallet, Key, BookOpen, User } from 'lucide-react';
+import { Home, Wallet, Key, User } from 'lucide-react';
 import { useTelegram } from '../hooks/useTelegram';
 
-export type TabType = 'dashboard' | 'shop' | 'keys' | 'guide' | 'profile';
+export type TabType = 'dashboard' | 'shop' | 'keys' | 'profile';
 
 interface NavigationProps {
   activeTab: TabType;
@@ -16,7 +16,6 @@ export const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab 
     { id: 'dashboard' as TabType, label: 'Главная', icon: Home },
     { id: 'shop' as TabType, label: 'Тарифы', icon: Wallet },
     { id: 'keys' as TabType, label: 'Ключи', icon: Key },
-    { id: 'guide' as TabType, label: 'Инструкция', icon: BookOpen },
     { id: 'profile' as TabType, label: 'Профиль', icon: User },
   ];
 
