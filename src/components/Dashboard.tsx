@@ -69,7 +69,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ subscription, onNavigateTo
       {/* Main Hero Card */}
       <div className="pv-card-glow p-6 flex flex-col items-center justify-center text-center space-y-3">
         <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-[#F4F0EA]/30 my-1 shadow-2xl bg-black">
-          <img src="/logo.png" alt="ПАРТИЗАН" className="w-full h-full object-cover" />
+          <img src="./logo.png" alt="ПАРТИЗАН" className="w-full h-full object-cover" />
         </div>
 
         <div>

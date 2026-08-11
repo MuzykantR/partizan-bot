@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ShieldCheck, MessageSquare, Share2, Check, Copy, Users, Award } from 'lucide-react';
+import { ShieldCheck, MessageSquare, Share2, Check, Copy, Users, Award, User as UserIcon } from 'lucide-react';
 import { UserSubscription } from '../types/vpn';
 import { useTelegram } from '../hooks/useTelegram';
 import { fetchUserProfile, UserProfileResponse } from '../services/api';
@@ -15,6 +15,7 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ subscription }
 
   const telegramId = user?.id || 999999999;
   const referralLink = profileData?.referrals?.referral_url || `https://t.me/partizanVPNbot?start=ref_${telegramId}`;
+  const userPhoto = user?.photo_url;
 
   useEffect(() => {
     async function loadData() {
@@ -50,7 +51,7 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ subscription }
     <div className="space-y-5 pb-24 pt-1">
       {/* Header */}
       <div className="flex items-center justify-center gap-2 pt-1">
-        <img src="/logo.png" alt="ПАРТИЗАН" className="w-7 h-7 object-contain rounded-full border border-[#C8372D]/50" />
+        <img src="./logo.png" alt="ПАРТИЗАН" className="w-7 h-7 object-contain rounded-full border border-[#C8372D]/50" />
         <h1 className="text-xl font-extrabold font-mono text-[#F4F0EA] uppercase tracking-wider">
           ПАРТИЗАН
         </h1>
@@ -65,7 +66,13 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ subscription }
       {/* User Avatar Card */}
       <div className="pv-card p-6 flex flex-col items-center justify-center text-center">
         <div className="w-24 h-24 rounded-3xl bg-[#C8372D] overflow-hidden p-1 shadow-xl border border-[#F4F0EA]/20 flex items-center justify-center">
-          <img src="/logo.png" alt="Avatar" className="w-full h-full object-cover rounded-2xl" />
+          {userPhoto ? (
+            <img src={userPhoto} alt="Avatar" className="w-full h-full object-cover rounded-2xl" />
+          ) : (
+            <div className="w-full h-full bg-[#1A1A1C] rounded-2xl flex items-center justify-center text-[#F4F0EA]">
+              <UserIcon className="w-12 h-12 text-[#C8372D]" />
+            </div>
+          )}
         </div>
 
         <div className="mt-3 space-y-1">

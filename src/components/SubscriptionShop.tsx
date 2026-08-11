@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CreditCard, Check, Tag, ShieldCheck, Zap } from 'lucide-react';
+import { CreditCard, Check, Tag, Zap, Info } from 'lucide-react';
 import { SubscriptionPlan } from '../types/vpn';
 import { useTelegram } from '../hooks/useTelegram';
 
@@ -61,14 +61,26 @@ export const SubscriptionShop: React.FC = () => {
   const handlePayRubles = () => {
     triggerHaptic.medium();
     const finalPrice = promoApplied ? Math.round(selectedPlan.priceRub * 0.9) : selectedPlan.priceRub;
-    setPaymentSuccessMessage(`Заказ на сумму ${finalPrice} ₽ успешно оформлен!`);
+    
+    /* 
+    ========================================================================
+    ОРИГИНАЛЬНАЯ ЛОГИКА ОПЛАТЫ (ЗАКОММЕНТИРОВАНА ПО ТРЕБОВАНИЮ ПОЛЬЗОВАТЕЛЯ):
+    ------------------------------------------------------------------------
+    // API запрос на генерацию счета/эквайринга (СБП / ЮMoney / Telegram Stars)
+    // const paymentUrl = await createPaymentInvoice(selectedPlan.id, finalPrice);
+    // window.Telegram.WebApp.openInvoice(paymentUrl);
+    ========================================================================
+    */
+
+    // Демонстрационный режим:
+    setPaymentSuccessMessage(`Демонстрационный режим: Тариф «${selectedPlan.name}» (${finalPrice} ₽) отображен. Оплата пока не списывается.`);
     setShowPaymentModal(false);
     triggerHaptic.success();
   };
 
   return (
     <div className="space-y-5 pb-24 pt-1">
-      {/* Header matching partizan_mvp_tariffs.jpg */}
+      {/* Header */}
       <div>
         <h1 className="text-2xl font-extrabold text-[#F4F0EA] tracking-tight">
           Тарифные планы
@@ -78,14 +90,14 @@ export const SubscriptionShop: React.FC = () => {
       {paymentSuccessMessage && (
         <div className="bg-[#1F1616] border border-[#C8372D] rounded-2xl p-4 text-[#F4F0EA] text-sm flex items-center justify-between shadow-xl">
           <div className="flex items-center gap-2">
-            <ShieldCheck className="w-5 h-5 text-[#C8372D]" />
-            <span>{paymentSuccessMessage}</span>
+            <Info className="w-5 h-5 text-[#C8372D] shrink-0" />
+            <span className="text-xs leading-relaxed">{paymentSuccessMessage}</span>
           </div>
-          <button onClick={() => setPaymentSuccessMessage('')} className="text-xs text-[#C8372D] font-bold underline">OK</button>
+          <button onClick={() => setPaymentSuccessMessage('')} className="text-xs text-[#C8372D] font-bold underline shrink-0">OK</button>
         </div>
       )}
 
-      {/* Tariff Cards matching partizan_mvp_tariffs.jpg */}
+      {/* Tariff Cards */}
       <div className="space-y-3.5">
         {PLANS.map((plan) => {
           const isSelected = selectedPlan.id === plan.id;
@@ -117,7 +129,6 @@ export const SubscriptionShop: React.FC = () => {
               )}
 
               <div className="flex items-center gap-3">
-                {/* Radio selection circle */}
                 <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
                   isSelected ? 'border-[#C8372D] bg-[#C8372D]' : 'border-[#9E9B97]'
                 }`}>
@@ -135,7 +146,6 @@ export const SubscriptionShop: React.FC = () => {
                 </div>
               </div>
 
-              {/* Features list */}
               {isSelected && (
                 <ul className="mt-4 pt-3 border-t border-[#2D2D30] space-y-1.5 pl-8">
                   {plan.features.map((feat, idx) => (
@@ -151,7 +161,7 @@ export const SubscriptionShop: React.FC = () => {
         })}
       </div>
 
-      {/* Promo Code Form matching partizan_mvp_tariffs.jpg */}
+      {/* Promo Code Form */}
       <form onSubmit={handleApplyPromo} className="flex gap-2">
         <div className="flex-1 bg-[#1A1A1C] border border-[#2D2D30] rounded-2xl px-4 py-3 flex items-center gap-2">
           <Tag className="w-4 h-4 text-[#C8372D] shrink-0" />
@@ -172,7 +182,7 @@ export const SubscriptionShop: React.FC = () => {
       </form>
       {promoError && <p className="text-xs text-[#C8372D] px-1 font-bold">{promoError}</p>}
 
-      {/* Pay CTA Button (Rubles Only) */}
+      {/* Pay CTA Button */}
       <button
         onClick={() => {
           triggerHaptic.medium();
@@ -184,12 +194,12 @@ export const SubscriptionShop: React.FC = () => {
         Оплатить подписку «{selectedPlan.name}»
       </button>
 
-      {/* Payment Selector Modal (Rubles Only) */}
+      {/* Payment Selector Modal */}
       {showPaymentModal && (
         <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
           <div className="bg-[#1A1A1C] border border-[#2D2D30] w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-[#2D2D30] pb-3">
-              <h3 className="text-base font-bold text-[#F4F0EA]">Способ оплаты (Рубли)</h3>
+              <h3 className="text-base font-bold text-[#F4F0EA]">Способ оплаты</h3>
               <button
                 onClick={() => setShowPaymentModal(false)}
                 className="text-[#9E9B97] hover:text-[#F4F0EA] text-xs bg-[#0E0E10] px-2.5 py-1 rounded-full border border-[#2D2D30]"
@@ -208,8 +218,8 @@ export const SubscriptionShop: React.FC = () => {
                     <CreditCard className="w-5 h-5" />
                   </div>
                   <div className="text-left">
-                    <div className="text-sm font-bold text-[#F4F0EA]">Банковская карта / СБП</div>
-                    <div className="text-xs text-[#9E9B97]">МИР, Visa, MasterCard, СберПэй, T-Pay</div>
+                    <div className="text-sm font-bold text-[#F4F0EA]">Демонстрационная оплата</div>
+                    <div className="text-xs text-[#9E9B97]">МИР, СБП, СберПэй, T-Pay (без списания)</div>
                   </div>
                 </div>
                 <div className="text-base font-bold text-[#F4F0EA]">
