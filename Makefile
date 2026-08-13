@@ -1,62 +1,59 @@
 # ==============================================================================
-# PARTIZAN VPN — MAKEFILE & AUTOMATION RUNBOOK
+# PARTIZAN VPN — SERVER-SIDE MAKEFILE (DIRECTLY EXECUTED ON SERVER)
 # ==============================================================================
 
-.PHONY: help build check push deploy deploy-backend deploy-frontend logs status clean-db dev
+.PHONY: help install build deploy deploy-backend deploy-frontend restart logs status clean-db
 
-SERVER_ALIAS := axisforge
-SERVER_PASS := S@S#0kHZS%smXkaW
-SERVER_DIR := /opt/partizan-vpn-bot
+PROJECT_DIR := /opt/partizan-vpn-bot
 WWW_DIR := /var/www/axisforge.tech/twa
 SERVICE_NAME := partizan-bot
+VENV_PIP := $(PROJECT_DIR)/venv/bin/pip
 
 help:
-	@echo "PARTIZAN VPN Makefile Commands:"
-	@echo "  make dev             - Start local Vite development server"
-	@echo "  make build           - Build local TWA frontend bundle"
-	@echo "  make check           - Check Python & TypeScript compilation"
-	@echo "  make push MSG='...'  - Commit and push changes to GitHub main"
-	@echo "  make deploy-backend  - Git pull & restart partizan-bot on server"
-	@echo "  make deploy-frontend - Build & deploy TWA static bundle to Nginx"
-	@echo "  make deploy MSG='..' - Complete deploy (push + backend + frontend)"
-	@echo "  make logs            - Stream systemd service journal logs"
-	@echo "  make status          - Check systemd service status on server"
-	@echo "  make clean-db        - Clean test users from Marzban and reset bot DB"
+	@echo "PARTIZAN VPN Server-Side Makefile Commands:"
+	@echo "  make deploy          - Git pull, build TWA frontend on server, sync Nginx & restart service"
+	@echo "  make build           - Build TWA frontend bundle on server & sync to /var/www/axisforge.tech/twa/"
+	@echo "  make deploy-backend  - Git pull & restart partizan-bot service"
+	@echo "  make restart         - Restart partizan-bot systemd service"
+	@echo "  make logs            - Stream systemd service journal logs (50 lines)"
+	@echo "  make status          - Check systemd service status"
+	@echo "  make install         - Install Python & Node.js dependencies on server"
+	@echo "  make clean-db        - Clean partizan_% users from Marzban & reset bot DB"
 
-dev:
-	npm run dev
+install:
+	@echo "Installing Python dependencies..."
+	if [ -f requirements.txt ]; then $(VENV_PIP) install -r requirements.txt; fi
+	@echo "Installing Frontend dependencies..."
+	npm install
 
 build:
+	@echo "Building TWA frontend on server..."
 	npm run build
-
-check:
-	python -m py_compile bot/*.py
-	npm run build
-
-push:
-	git add .
-	@if [ -z "$(MSG)" ]; then \
-		git commit -m "update: automated commit"; \
-	else \
-		git commit -m "$(MSG)"; \
-	fi
-	git push origin main
+	@echo "Deploying dist to Nginx web root..."
+	sudo cp -r dist/* $(WWW_DIR)/
+	sudo chown -R www-data:www-data $(WWW_DIR)/
+	@echo "Frontend deployment complete!"
 
 deploy-backend:
-	ssh $(SERVER_ALIAS) "cd $(SERVER_DIR) && git pull origin main && echo '$(SERVER_PASS)' | sudo -S systemctl restart $(SERVICE_NAME)"
+	@echo "Pulling latest code from GitHub..."
+	git pull origin main
+	@echo "Restarting $(SERVICE_NAME) service..."
+	sudo systemctl restart $(SERVICE_NAME)
+	@echo "Backend deployment complete!"
 
-deploy-frontend: build
-	scp -r dist $(SERVER_ALIAS):$(SERVER_DIR)/
-	ssh $(SERVER_ALIAS) "echo '$(SERVER_PASS)' | sudo -S bash -c 'cp -r $(SERVER_DIR)/dist/* $(WWW_DIR)/ && chown -R www-data:www-data $(WWW_DIR)/'"
+deploy: deploy-backend build
+	@echo "✅ Server-side full deployment finished successfully!"
 
-deploy: push deploy-backend deploy-frontend
-	@echo "✅ Complete deployment finished successfully!"
+restart:
+	sudo systemctl restart $(SERVICE_NAME)
 
 logs:
-	ssh $(SERVER_ALIAS) "echo '$(SERVER_PASS)' | sudo -S journalctl -u $(SERVICE_NAME) -n 50 --no-pager"
+	sudo journalctl -u $(SERVICE_NAME) -n 50 --no-pager
 
 status:
-	ssh $(SERVER_ALIAS) "echo '$(SERVER_PASS)' | sudo -S systemctl status $(SERVICE_NAME)"
+	sudo systemctl status $(SERVICE_NAME)
 
 clean-db:
-	ssh $(SERVER_ALIAS) "echo 'import sqlite3; conn = sqlite3.connect(\"/var/lib/marzban/db.sqlite3\"); cur = conn.cursor(); cur.execute(\"DELETE FROM users WHERE username LIKE \\\x27partizan_%\\\x27\"); conn.commit(); print(\"Deleted partizan users:\", cur.rowcount); conn.close()' > /tmp/clean.py && echo '$(SERVER_PASS)' | sudo -S python3 /tmp/clean.py && echo '$(SERVER_PASS)' | sudo -S rm -f $(SERVER_DIR)/bot/partizan.db && echo '$(SERVER_PASS)' | sudo -S systemctl restart $(SERVICE_NAME)"
+	sudo python3 -c "import sqlite3; conn = sqlite3.connect('/var/lib/marzban/db.sqlite3'); cur = conn.cursor(); cur.execute(\"DELETE FROM users WHERE username LIKE 'partizan_%'\"); conn.commit(); print('Deleted partizan users:', cur.rowcount); conn.close()"
+	sudo rm -f $(PROJECT_DIR)/bot/partizan.db
+	sudo systemctl restart $(SERVICE_NAME)
