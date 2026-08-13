@@ -75,12 +75,12 @@ async def command_start_handler(message: types.Message):
 
     welcome_text = (
         f"🛡️ <b>Привет, {user_name}!</b>\n\n"
-        f"Добро пожаловать в <b>PARTIZAN VPN</b> — невидимый доступ к свободному интернету на протоколе <b>VLESS-XHTTP</b>.\n\n"
-        f"⚡ <b>Преимущества PARTIZAN:</b>\n"
+        f"Добро пожаловать в <b>ПАРТИЗАН VPN</b>.\n\n"
+        f"⚡ <b>Преимущества ПАРТИЗАН:</b>\n"
         f"• <b>Безлимитный VPN трафик</b> на максимальной скорости (1 Гбит/с)\n"
         f"• Полная защита от блокировок ТСПУ в РФ\n"
         f"• До 5 устройств одновременно на 1 подписку\n"
-        f"• Быстрая настройка в 1 клик через <b>Happ Client</b>\n\n"
+        f"• Быстрая настройка в 1 клик через <b>HAPP</b>\n\n"
         f"Нажмите кнопку ниже, чтобы открыть приложение:"
     )
 
@@ -88,7 +88,7 @@ async def command_start_handler(message: types.Message):
         inline_keyboard=[
             [
                 InlineKeyboardButton(
-                    text="🚀 Открыть PARTIZAN VPN",
+                    text="🚀 Открыть ПАРТИЗАН VPN",
                     web_app=WebAppInfo(url=settings.web_app_url)
                 )
             ],
@@ -110,8 +110,8 @@ async def command_help_handler(message: types.Message):
     Handles /help command.
     """
     help_text = (
-        "❓ <b>Помощь по настройке PARTIZAN VPN:</b>\n\n"
-        "1. Нажмите <b>«Открыть PARTIZAN VPN»</b> в меню бота.\n"
+        "❓ <b>Помощь по настройке ПАРТИЗАН VPN:</b>\n\n"
+        "1. Нажмите <b>«Открыть ПАРТИЗАН VPN»</b> в меню бота.\n"
         "2. Перейдите на главный экран или во вкладку <b>«КЛЮЧИ»</b>.\n"
         "3. Нажмите кнопку <b>«Добавить подписку в Happ»</b>.\n"
         "4. Все серверы автоматически добавятся в клиент Happ!"
@@ -143,7 +143,7 @@ async def main():
     try:
         await bot.set_chat_menu_button(
             menu_button=MenuButtonWebApp(
-                text="PARTIZAN VPN",
+                text="ПАРТИЗАН VPN",
                 web_app=WebAppInfo(url=settings.web_app_url)
             )
         )

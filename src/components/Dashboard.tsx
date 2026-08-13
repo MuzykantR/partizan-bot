@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Copy, Check, QrCode, Smartphone, Infinity as InfinityIcon, Zap, ShieldCheck } from 'lucide-react';
+import { Copy, Check, QrCode, Smartphone, Infinity as InfinityIcon, Zap, ShieldCheck, FileText } from 'lucide-react';
 import { UserSubscription } from '../types/vpn';
 import { useTelegram } from '../hooks/useTelegram';
 import { QRCodeSVG } from 'qrcode.react';
+import { OfferModal } from './OfferModal';
 
 interface DashboardProps {
   subscription: UserSubscription;
@@ -14,6 +15,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ subscription, onNavigateTo
   const { triggerHaptic } = useTelegram();
   const [copied, setCopied] = useState<boolean>(false);
   const [showQrModal, setShowQrModal] = useState<boolean>(false);
+  const [showOfferModal, setShowOfferModal] = useState<boolean>(false);
   const [isActivating, setIsActivating] = useState<boolean>(false);
 
   const handleCopySubscription = () => {
@@ -215,6 +217,23 @@ export const Dashboard: React.FC<DashboardProps> = ({ subscription, onNavigateTo
           <span className="text-2xl">🇩🇪</span>
         </div>
       </div>
+
+      {/* Public Offer Button */}
+      <div className="pt-3 pb-1 text-center">
+        <button
+          onClick={() => {
+            triggerHaptic.light();
+            setShowOfferModal(true);
+          }}
+          className="text-xs text-[#9E9B97] hover:text-[#F4F0EA] underline transition-colors inline-flex items-center gap-1.5 py-1"
+        >
+          <FileText className="w-3.5 h-3.5 text-[#C8372D]" />
+          <span>Публичная оферта и Пользовательское соглашение</span>
+        </button>
+      </div>
+
+      {/* Public Offer Modal */}
+      <OfferModal isOpen={showOfferModal} onClose={() => setShowOfferModal(false)} />
 
       {/* QR Code Modal */}
       {showQrModal && hasSub && (

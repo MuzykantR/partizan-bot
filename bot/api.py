@@ -1,3 +1,4 @@
+import os
 import logging
 from typing import Optional, Dict, Any
 from datetime import datetime, timedelta
@@ -39,6 +40,7 @@ async def get_current_user(
     """
     Validates Telegram WebApp initData from headers.
     Returns user dict with telegram id, first_name, username.
+    Raises 401 Unauthorized if initData is missing or invalid.
     """
     init_data_raw = x_telegram_init_data or authorization
     if init_data_raw and init_data_raw.startswith("Bearer "):
@@ -56,12 +58,18 @@ async def get_current_user(
                 detail=f"Invalid Telegram authentication: {str(e)}"
             )
 
-    # Fallback user for dev/browser testing
-    return {
-        "id": 999999999,
-        "first_name": "Партизан",
-        "username": "partizan_tester"
-    }
+    # Fallback user ONLY in explicit DEV_MODE environment
+    if os.getenv("DEV_MODE") == "1":
+        return {
+            "id": 999999999,
+            "first_name": "Партизан",
+            "username": "partizan_tester"
+        }
+
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Telegram initData authorization is required. Access available only via Telegram Mini App."
+    )
 
 
 @app.on_event("startup")
