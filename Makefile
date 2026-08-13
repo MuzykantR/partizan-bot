@@ -1,5 +1,5 @@
 # ==============================================================================
-# PARTIZAN VPN — SERVER-SIDE MAKEFILE (EXECUTED DIRECTLY ON SERVER)
+# PARTIZAN VPN — SERVER-SIDE MAKEFILE (DIRECTLY EXECUTED ON SERVER)
 # ==============================================================================
 
 .PHONY: help install build deploy deploy-backend deploy-frontend restart logs status clean-db
@@ -8,7 +8,8 @@ PROJECT_DIR := /opt/partizan-vpn-bot
 WWW_DIR := /var/www/axisforge.tech/twa
 SERVICE_NAME := partizan-bot
 VENV_PIP := $(PROJECT_DIR)/venv/bin/pip
-SUDO := echo 'S@S#0kHZS%smXkaW' | sudo -S
+SERVER_PASS := S@S\#0kHZS%smXkaW
+SUDO := echo '$(SERVER_PASS)' | sudo -S
 
 help:
 	@echo "PARTIZAN VPN Server-Side Makefile Commands:"
