@@ -1,5 +1,5 @@
 # ==============================================================================
-# PARTIZAN VPN — SERVER-SIDE MAKEFILE (DIRECTLY EXECUTED ON SERVER)
+# PARTIZAN VPN — SERVER-SIDE MAKEFILE (EXECUTED DIRECTLY ON SERVER)
 # ==============================================================================
 
 .PHONY: help install build deploy deploy-backend deploy-frontend restart logs status clean-db
@@ -8,6 +8,7 @@ PROJECT_DIR := /opt/partizan-vpn-bot
 WWW_DIR := /var/www/axisforge.tech/twa
 SERVICE_NAME := partizan-bot
 VENV_PIP := $(PROJECT_DIR)/venv/bin/pip
+SUDO := echo 'S@S#0kHZS%smXkaW' | sudo -S
 
 help:
 	@echo "PARTIZAN VPN Server-Side Makefile Commands:"
@@ -30,30 +31,30 @@ build:
 	@echo "Building TWA frontend on server..."
 	npm run build
 	@echo "Deploying dist to Nginx web root..."
-	sudo cp -r dist/* $(WWW_DIR)/
-	sudo chown -R www-data:www-data $(WWW_DIR)/
+	$(SUDO) cp -r dist/* $(WWW_DIR)/
+	$(SUDO) chown -R www-data:www-data $(WWW_DIR)/
 	@echo "Frontend deployment complete!"
 
 deploy-backend:
 	@echo "Pulling latest code from GitHub..."
 	git pull origin main
 	@echo "Restarting $(SERVICE_NAME) service..."
-	sudo systemctl restart $(SERVICE_NAME)
+	$(SUDO) systemctl restart $(SERVICE_NAME)
 	@echo "Backend deployment complete!"
 
 deploy: deploy-backend build
 	@echo "✅ Server-side full deployment finished successfully!"
 
 restart:
-	sudo systemctl restart $(SERVICE_NAME)
+	$(SUDO) systemctl restart $(SERVICE_NAME)
 
 logs:
-	sudo journalctl -u $(SERVICE_NAME) -n 50 --no-pager
+	$(SUDO) journalctl -u $(SERVICE_NAME) -n 50 --no-pager
 
 status:
-	sudo systemctl status $(SERVICE_NAME)
+	$(SUDO) systemctl status $(SERVICE_NAME)
 
 clean-db:
-	sudo python3 -c "import sqlite3; conn = sqlite3.connect('/var/lib/marzban/db.sqlite3'); cur = conn.cursor(); cur.execute(\"DELETE FROM users WHERE username LIKE 'partizan_%'\"); conn.commit(); print('Deleted partizan users:', cur.rowcount); conn.close()"
-	sudo rm -f $(PROJECT_DIR)/bot/partizan.db
-	sudo systemctl restart $(SERVICE_NAME)
+	$(SUDO) python3 -c "import sqlite3; conn = sqlite3.connect('/var/lib/marzban/db.sqlite3'); cur = conn.cursor(); cur.execute(\"DELETE FROM users WHERE username LIKE 'partizan_%'\"); conn.commit(); print('Deleted partizan users:', cur.rowcount); conn.close()"
+	$(SUDO) rm -f $(PROJECT_DIR)/bot/partizan.db
+	$(SUDO) systemctl restart $(SERVICE_NAME)
