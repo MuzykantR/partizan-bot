@@ -1,0 +1,37 @@
+# Reference repositories downloaded for study
+repos/
+
+# Node dependencies & build outputs
+node_modules/
+dist/
+build/
+.cache/
+
+# Python cache & sqlite DB
+__pycache__/
+*.pyc
+*.db
+*.sqlite3
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Logs & temp
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE & OS files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Service scratch configs & server scripts
+scratch/
+clean_marzban.py
+*.tar.gz
+server_backup_*/
